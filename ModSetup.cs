@@ -46,39 +46,9 @@ namespace dm.ffmods.raidersdroploot
 
         public Dictionary<LootItem, GameObject> ItemPrefabs = new Dictionary<LootItem, GameObject>();
 
-        public Dictionary<LootItem, SpawnConfig> SpawnCOnfigs = new Dictionary<LootItem, SpawnConfig>();
-
         #endregion Fields
 
         #region Public Methods
-
-        public void CreateSpawnConfigs(GameManager gameManager, LootItem item)
-        {
-            switch (item)
-            {
-                case LootItem.crudeWeapon:
-                    SpawnCOnfigs.Add(new SpawnConfig(ItemPrefabs[item].GetComponentInChildren<WeaponResource>(),);
-                    break;
-
-                case y:
-                    // code block
-                    break;
-
-                default:
-                    // code block
-                    break;
-            }
-
-            WeaponResource prefab = AssignPrefab();
-
-            return new SpawnConfig(prefab, gameManager.workBucketManager.itemWeapon, action);
-
-            // the action to package into the config
-            void action(DroppedResource instance)
-            {
-                gameManager.resourceManager.AddOrRemoveWeaponResource(instance.Cast<WeaponResource>(), false);
-            }
-        }
 
         public bool TryFindItemPrefabs()
         {
@@ -118,25 +88,5 @@ namespace dm.ffmods.raidersdroploot
         }
 
         #endregion Public Methods
-
-        #region Private Methods
-
-        private WeaponResource AssignPrefab()
-        {
-            Type val = Il2CppType.Of<GameObject>();
-            var allObjects = Resources.FindObjectsOfTypeAll(val);
-
-            foreach (var obj in allObjects)
-            {
-                if (obj.Cast<GameObject>().name == "Melee_Sword01A_Resource")
-                {
-                    return obj.Cast<GameObject>().GetComponentInChildren<WeaponResource>();
-                }
-            }
-            // should never be reached, because we check before
-            return new WeaponResource();
-        }
-
-        #endregion Private Methods
     }
 }

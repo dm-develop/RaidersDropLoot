@@ -8,17 +8,20 @@ namespace dm.ffmods.raidersdroploot
     {
         #region Fields
 
-        public GameManager GameManager;
         private float checkIntervalInSeconds = 1f;
         private bool frontierHasLoaded = false;
+        private GameManager gameManager;
         private ModSetup modSetup;
+        private LootItemSpawnManager spawnManager;
         private float timeSinceLastCheckInSeconds = 0f;
 
         #endregion Fields
 
         #region Properties
 
+        public GameManager GameManager { get => gameManager; }
         public bool HasInitalised { get; private set; }
+        public LootItemSpawnManager SpawnManager { get => spawnManager; }
 
         #endregion Properties
 
@@ -55,7 +58,8 @@ namespace dm.ffmods.raidersdroploot
                 return;
             }
             // find GaneManager
-            GameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+            gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+            spawnManager = new LootItemSpawnManager(gameManager);
 
             // only continue if sword can be found
             if (!modSetup.TryFindItemPrefabs())
@@ -67,8 +71,8 @@ namespace dm.ffmods.raidersdroploot
 
             if (!modSetup.ArePrefabsMissing)
             {
-                LoggerInstance.Msg($"all prefabs found, creating SpawnConfigs ...");
-                Config = modSetup.CreateConfigs(GameManager);
+                LoggerInstance.Msg($"all prefabs found, prepping spawn packages ...");
+                spawnManager.PrepAllPackages(modSetup.ItemPrefabs);
             }
 
             HasInitalised = true;

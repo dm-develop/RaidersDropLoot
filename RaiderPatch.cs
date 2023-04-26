@@ -10,36 +10,15 @@ namespace dm.ffmods.raidersdroploot
     {
         #region Private Methods
 
-        private static void CreateSword(Vector3 position)
+        private static void CreateSimpleWeapon(Vector3 position)
         {
             if (!Melon<RaidersDropLoot>.Instance.HasInitalised)
             {
                 Melon<RaidersDropLoot>.Logger.Msg($"mod not initialised, ignoring spawn call ...");
                 return;
             }
-            var gameManager = Melon<RaidersDropLoot>.Instance.GameManager;
-            var config = Melon<RaidersDropLoot>.Instance.Config;
 
-            // create prefab instance
-            DroppedResource instance = UnityEngine.Object.Instantiate(config.Prefab);
-
-            // set its positions to where raider died
-            instance.transform.localPosition = Vector3.zero;
-            instance.transform.position = position;
-
-            // make it useable (?)
-            ItemStorage itemStorage = instance.GetComponent<ReservableItemStorage>().itemStorage;
-            ItemBundle val = new ItemBundle(config.Item, 1u, 100u);
-            itemStorage.AddItems(val);
-            config.Action(instance);
-            config.WorkBucketIdentifiers.ForEach(delegate (WorkBucketIdentifier i)
-            {
-                instance.AddToWorkBucket(gameManager.workBucketManager.Cast<IOwnerOfWorkBuckets>(), i, 0f);
-            });
-            instance.CheckWorkAvailability();
-
-            // print success msg
-            Melon<RaidersDropLoot>.Logger.Msg($"spawned sword at {position}");
+            Melon<RaidersDropLoot>.Instance.SpawnManager.SpawnLootItem(LootItem.crudeWeapon, position);
         }
 
         //todo: check if it also works with postfix
@@ -54,7 +33,7 @@ namespace dm.ffmods.raidersdroploot
             Vector3 position = instance.pawnInstance.transform.position;
 
             //create sword where raider died
-            CreateSword(position);
+            CreateSimpleWeapon(position);
 
             // we want original OnDeath to run, so we set return value to true here for Harmony
             return true;
