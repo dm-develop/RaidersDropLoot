@@ -149,8 +149,12 @@ namespace dm.ffmods.raidersdroploot
 
             //create instance
             DroppedResource instance = UnityEngine.Object.Instantiate(package.Resource);
+            // set its positions to where raider died
+            instance.transform.localPosition = Vector3.zero;
+            instance.transform.position = position;
 
             InitInstance(package, instance);
+            Melon<RaidersDropLoot>.Logger.Msg($" created '{LootItem.crudeWeapon}' at {position}");
         }
 
         #endregion Private Methods
