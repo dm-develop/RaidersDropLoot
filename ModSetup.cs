@@ -19,7 +19,8 @@ namespace dm.ffmods.raidersdroploot
         crossbow,
         arrows,
         smokedMeat,
-        bread
+        bread,
+        gold
     }
 
     public class ModSetup
@@ -39,7 +40,8 @@ namespace dm.ffmods.raidersdroploot
             { LootItem.crossbow , "Ranged_Crossbow01A_Resource"},
             { LootItem.arrows, "Ranged_Bow01A_Ammo_Resource"},
             { LootItem.smokedMeat , "Resource_Villager_SmokedMeat01A"},
-            { LootItem.bread , "Resource_Villager_Bread01A"}
+            { LootItem.bread , "Resource_Villager_Bread01A"},
+            { LootItem.gold, "Resource_Villager_GoldIngot01A"}
         };
 
         public bool ArePrefabsMissing = true;
@@ -71,7 +73,7 @@ namespace dm.ffmods.raidersdroploot
                     {
                         ItemPrefabs.Add(item.Key, obj.Cast<GameObject>());
                         itemsMissing.Remove(item.Key);
-                        Melon<RaidersDropLoot>.Logger.Msg($"found prefab for '{item.Key}!'");
+                        Melon<RaidersDropLootMelon>.Logger.Msg($"found prefab for '{item.Key}!'");
                     }
                 }
             }
