@@ -23,7 +23,7 @@ namespace dm.ffmods.raidersdroploot
         gold
     }
 
-    public class ModSetup
+    public class PrefabManager
     {
         #region Fields
 
@@ -73,7 +73,10 @@ namespace dm.ffmods.raidersdroploot
                     {
                         ItemPrefabs.Add(item.Key, obj.Cast<GameObject>());
                         itemsMissing.Remove(item.Key);
-                        Melon<RaidersDropLootMelon>.Logger.Msg($"found prefab for '{item.Key}!'");
+                        if (Melon<RaidersDropLootMelon>.Instance.Verbose)
+                        {
+                            Melon<RaidersDropLootMelon>.Logger.Msg($"found prefab for '{item.Key}!'");
+                        }
                     }
                 }
             }

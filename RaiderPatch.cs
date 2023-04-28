@@ -16,7 +16,10 @@ namespace dm.ffmods.raidersdroploot
         {
             if (!Melon<RaidersDropLootMelon>.Instance.HasInitalised)
             {
-                Melon<RaidersDropLootMelon>.Logger.Warning($"mod not initialised, skipping Raider OnDeath hook ...");
+                if (Melon<RaidersDropLootMelon>.Instance.Verbose)
+                {
+                    Melon<RaidersDropLootMelon>.Logger.Warning($"mod not initialised, skipping Raider OnDeath hook ...");
+                }
                 return true;
             }
 
@@ -27,13 +30,13 @@ namespace dm.ffmods.raidersdroploot
             Vector3 position = instance.pawnInstance.transform.position;
 
             // get LootRoller instance
-            var lootRoller = Melon<RaidersDropLootMelon>.Instance.LootRoller;
+            var lootRoller = Melon<RaidersDropLootMelon>.Instance.LootManager;
 
             // determine loot
-            RaiderType type = LootRoller.DetermineRaiderTypeFromUnitName(instance.raiderUnitData.name);
+            RaiderType type = LootManager.DetermineRaiderTypeFromUnitName(instance.raiderUnitData.name);
 
             // check if there is a loot table for this raider type
-            if (!lootRoller.HasLoot(type))
+            if (!lootRoller.IsLootable(type))
             {
                 return true;
             }
