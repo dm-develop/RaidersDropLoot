@@ -326,24 +326,6 @@ namespace dm.ffmods.raidersdroploot
             Melon<RaidersDropLootMelon>.Logger.Msg($"created '{itemType}' at {position}");
         }
 
-        /// <summary>
-        /// deprecated
-        /// </summary>
-        /// <param name="position"> </param>
-        private void SpawnSimpleWeapon(Vector3 position)
-        {
-            var package = SpawnPackages[LootItem.crudeWeapon];
-
-            //create instance
-            DroppedResource instance = UnityEngine.Object.Instantiate(package.Resource);
-            // set its positions to where raider died
-            instance.transform.localPosition = Vector3.zero;
-            instance.transform.position = position;
-
-            InitInstance(package, instance);
-            Melon<RaidersDropLootMelon>.Logger.Msg($"created '{LootItem.crudeWeapon}' at {position}");
-        }
-
         #endregion Private Methods
     }
 }

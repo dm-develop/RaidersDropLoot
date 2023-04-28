@@ -10,7 +10,7 @@ namespace dm.ffmods.raidersdroploot
     {
         #region Fields
 
-        public static Dictionary<string, RaiderType> UnitNames = new Dictionary<string, RaiderType>
+        private static Dictionary<string, RaiderType> unitNames = new Dictionary<string, RaiderType>
         {
             { "RaiderUnit_Brawler", RaiderType.Brawler },
             { "RaiderUnit_Thief", RaiderType.Thief },
@@ -39,31 +39,36 @@ namespace dm.ffmods.raidersdroploot
 
         #region Public Methods
 
-        public static RaiderType DetermineRaiderType(string unitName)
+        public static RaiderType DetermineRaiderTypeFromUnitName(string unitName)
         {
-            foreach (string key in UnitNames.Keys.OrderByDescending(s => s.Length))
+            foreach (string key in unitNames.Keys.OrderByDescending(s => s.Length))
             {
                 if (unitName.StartsWith(key))
                 {
-                    return UnitNames[key];
+                    return unitNames[key];
                 }
             }
             // if we can't find the name, return default
-            Melon<RaidersDropLootMelon>.Logger.Warning($"Raider type {unitName} unknown, treating as '{RaiderType.Brawler}'.");
+            Melon<RaidersDropLootMelon>.Logger.Warning($"Raider type '{unitName}' unknown, treating as '{RaiderType.Brawler}'.");
             return RaiderType.Brawler;
+        }
+
+        public bool HasLoot(RaiderType type)
+        {
+            return LootTables.ContainsKey(type);
         }
 
         public List<LootItem> RollLoot(RaiderType type)
         {
-            if (!LootTables.ContainsKey(type))
+            if (!HasLoot(type))
             {
-                Melon<RaidersDropLootMelon>.Logger.Warning($"No LootTable for {type} found, using table for '{RaiderType.Brawler}'.");
-                type = RaiderType.Brawler;
+                Melon<RaidersDropLootMelon>.Logger.Warning($"No loot for '{type}' found, returning empty list!");
+                return new List<LootItem>();
             }
 
             LootTable table = LootTables[type];
             List<LootItem> toSpawn = new List<LootItem>();
-            foreach (var item in table.DropRates)
+            foreach (var item in table.Drops)
             {
                 int roll = Random.Range(0, 100 + 1);
                 if (roll <= item.Value)
@@ -72,6 +77,25 @@ namespace dm.ffmods.raidersdroploot
                 }
             }
             return toSpawn;
+        }
+
+        public void UpdateLootTable(RaiderType type, LootTable table)
+        {
+            if (!table.Drops.Any())
+            {
+                Melon<RaidersDropLootMelon>.Logger.Warning($"No loot set for '{type}', removing entry from drop table list.");
+                LootTables.Remove(type);
+                return;
+            }
+            if (!LootTables.Keys.Contains(type))
+            {
+                Melon<RaidersDropLootMelon>.Logger.Warning($"Raider type '{type}' unknown, creating new loot entry.");
+                LootTables.Add(type, table);
+                return;
+            }
+            Melon<RaidersDropLootMelon>.Logger.Msg($"updating loot entry for '{type}'," +
+                $" new table has {table.Drops.Count()} drops.");
+            LootTables[type] = table;
         }
 
         #endregion Public Methods

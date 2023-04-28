@@ -30,10 +30,23 @@ namespace dm.ffmods.raidersdroploot
             var lootRoller = Melon<RaidersDropLootMelon>.Instance.LootRoller;
 
             // determine loot
-            RaiderType type = LootRoller.DetermineRaiderType(instance.raiderUnitData.name);
+            RaiderType type = LootRoller.DetermineRaiderTypeFromUnitName(instance.raiderUnitData.name);
+
+            // check if there is a loot table for this raider type
+            if (!lootRoller.HasLoot(type))
+            {
+                return true;
+            }
+            // get loor for raider typer
             var loot = lootRoller.RollLoot(type);
 
-            // spawn loot
+            // check if there really is loot
+            if (!loot.Any())
+            {
+                return true;
+            }
+
+            // spawn it
             var spawner = Melon<RaidersDropLootMelon>.Instance.SpawnManager;
             foreach (var item in loot)
             {

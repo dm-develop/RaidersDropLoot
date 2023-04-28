@@ -9,6 +9,7 @@ namespace dm.ffmods.raidersdroploot
         #region Fields
 
         private float checkIntervalInSeconds = 1f;
+        private ConfigManager configManager;
         private bool frontierHasLoaded = false;
         private GameManager gameManager;
         private LootRoller lootRoller;
@@ -33,6 +34,7 @@ namespace dm.ffmods.raidersdroploot
             LoggerInstance.Msg("Raiders drop loot mod loaded!");
             modSetup = new ModSetup();
             lootRoller = new LootRoller();
+            configManager = new ConfigManager();
         }
 
         public override void OnLateUpdate()
@@ -55,7 +57,7 @@ namespace dm.ffmods.raidersdroploot
             // only continue if GaneManager can been found
             if ((System.Object)(object)GameObject.Find("GameManager") == (System.Object)null)
             {
-                LoggerInstance.Msg($"could not find gameManager instance, will try again in {checkIntervalInSeconds} ...");
+                LoggerInstance.Warning($"could not find gameManager instance, will try again in {checkIntervalInSeconds} ...");
                 timeSinceLastCheckInSeconds = 0;
                 return;
             }
@@ -66,7 +68,7 @@ namespace dm.ffmods.raidersdroploot
             // only continue if sword can be found
             if (!modSetup.TryFindItemPrefabs())
             {
-                LoggerInstance.Msg($"could not find all item prefabs, will try again in {checkIntervalInSeconds} ...");
+                LoggerInstance.Warning($"could not find all item prefabs, will try again in {checkIntervalInSeconds} ...");
                 timeSinceLastCheckInSeconds = 0;
                 return;
             }
@@ -76,6 +78,16 @@ namespace dm.ffmods.raidersdroploot
                 LoggerInstance.Msg($"all prefabs found, prepping spawn packages ...");
                 spawnManager.PrepAllPackages(modSetup.ItemPrefabs);
             }
+
+            configManager.InitConfig(lootRoller);
+
+            if (!configManager.IsInitialised)
+            {
+                LoggerInstance.Warning($"could not initialise config, will try again in {checkIntervalInSeconds} ...");
+                return;
+            }
+
+            configManager.UpdateLootTablesfromConfig();
 
             HasInitalised = true;
             LoggerInstance.Msg($"mod initialised!");
