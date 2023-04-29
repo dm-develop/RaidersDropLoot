@@ -8,22 +8,30 @@ namespace dm.ffmods.raidersdroploot
     {
         #region Fields
 
-        private float checkIntervalInSeconds = 1f;
+        private float checkIntervalInSeconds = 3f;
         private ConfigManager configManager;
         private bool frontierHasLoaded = false;
         private GameManager gameManager;
-        private LootRoller lootRoller;
-        private ModSetup modSetup;
+        private LootManager lootManager;
+        private PrefabManager prefabManager;
+        private bool setupDone0 = false;
+        private bool setupDone1 = false;
+        private bool setupDone2 = false;
+        private bool setupDone3 = false;
+        private bool setupDone4 = false;
         private LootItemSpawnManager spawnManager;
         private float timeSinceLastCheckInSeconds = 0f;
+
+        private bool verbose = false;
 
         #endregion Fields
 
         #region Properties
 
         public bool HasInitalised { get; private set; }
-        public LootRoller LootRoller { get => lootRoller; }
+        public LootManager LootManager { get => lootManager; }
         public LootItemSpawnManager SpawnManager { get => spawnManager; }
+        public bool Verbose { get => verbose; set => verbose = value; }
 
         #endregion Properties
 
@@ -31,9 +39,9 @@ namespace dm.ffmods.raidersdroploot
 
         public override void OnInitializeMelon()
         {
-            LoggerInstance.Msg("Raiders drop loot mod loaded!");
-            modSetup = new ModSetup();
-            lootRoller = new LootRoller();
+            LoggerInstance.Msg("Setting up RaidersDropLoot mod ...");
+            prefabManager = new PrefabManager();
+            lootManager = new LootManager();
             configManager = new ConfigManager();
         }
 
@@ -49,15 +57,34 @@ namespace dm.ffmods.raidersdroploot
             {
                 return;
             }
+
+            // print progress
+            if (!setupDone0)
+            {
+                LoggerInstance.Msg("[0/4] Waiting for Frontier scene to load ...");
+                setupDone0 = true;
+            }
+
             // only continue if main scene has loaded
             if (!frontierHasLoaded)
             {
                 return;
             }
-            // only continue if GaneManager can been found
+
+            // print progress
+            if (!setupDone1)
+            {
+                LoggerInstance.Msg("[1/4] Fetching GameManager  ...");
+                setupDone1 = true;
+            }
+
+            // only continue if GameManager can been found
             if ((System.Object)(object)GameObject.Find("GameManager") == (System.Object)null)
             {
-                LoggerInstance.Warning($"could not find gameManager instance, will try again in {checkIntervalInSeconds} ...");
+                if (verbose)
+                {
+                    LoggerInstance.Warning($"could not find gameManager instance, will try again in {checkIntervalInSeconds} seconds ...");
+                }
                 timeSinceLastCheckInSeconds = 0;
                 return;
             }
@@ -65,37 +92,68 @@ namespace dm.ffmods.raidersdroploot
             gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
             spawnManager = new LootItemSpawnManager(gameManager);
 
-            // only continue if sword can be found
-            if (!modSetup.TryFindItemPrefabs())
+            // print progress
+            if (!setupDone2)
             {
-                LoggerInstance.Warning($"could not find all item prefabs, will try again in {checkIntervalInSeconds} ...");
+                LoggerInstance.Msg("[2/4] Fetching loot item prefabs ...");
+                setupDone2 = true;
+            }
+
+            // fetch prefabs
+            if (!prefabManager.TryFindItemPrefabs())
+            {
+                if (verbose)
+                {
+                    LoggerInstance.Warning($"could not find all item prefabs, will try again in {checkIntervalInSeconds} seconds ...");
+                }
+
                 timeSinceLastCheckInSeconds = 0;
                 return;
             }
 
-            if (!modSetup.ArePrefabsMissing)
+            // print progress
+            if (!setupDone3)
             {
-                LoggerInstance.Msg($"all prefabs found, prepping spawn packages ...");
-                spawnManager.PrepAllPackages(modSetup.ItemPrefabs);
+                LoggerInstance.Msg("[3/4] Prepping prefabs for use ...");
+                setupDone3 = true;
             }
 
-            configManager.InitConfig(lootRoller);
+            // prep loot for spawning
+            if (!prefabManager.ArePrefabsMissing)
+            {
+                spawnManager.PrepAllPackages(prefabManager.ItemPrefabs);
+            }
+
+            // print progress
+            if (!setupDone4)
+            {
+                LoggerInstance.Msg("[4/4] Reading config file ...");
+                setupDone4 = true;
+            }
+
+            // parse config file
+            configManager.InitConfig(lootManager);
 
             if (!configManager.IsInitialised)
             {
-                LoggerInstance.Warning($"could not initialise config, will try again in {checkIntervalInSeconds} ...");
+                if (verbose)
+                {
+                    LoggerInstance.Warning($"could not initialise config, will try again in {checkIntervalInSeconds} seconds ...");
+                }
                 return;
             }
 
-            configManager.UpdateLootTablesfromConfig();
-
+            // done!
             HasInitalised = true;
-            LoggerInstance.Msg($"mod initialised!");
+            LoggerInstance.Msg($"RaidersDropLoot mod initialised!");
         }
 
         public override void OnSceneWasLoaded(int buildIndex, string sceneName)
         {
-            LoggerInstance.Msg($"Scene {sceneName} with build index {buildIndex} has been loaded!");
+            if (verbose)
+            {
+                LoggerInstance.Msg($"Scene {sceneName} with build index {buildIndex} has been loaded!");
+            }
             if (sceneName == "Frontier")
             {
                 frontierHasLoaded = true;
