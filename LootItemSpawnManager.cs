@@ -323,7 +323,10 @@ namespace dm.ffmods.raidersdroploot
             instance.transform.position = position;
 
             InitInstance(package, instance);
-            Melon<RaidersDropLootMelon>.Logger.Msg($"created '{itemType}' at {position}");
+            if (Melon<RaidersDropLootMelon>.Instance.Verbose)
+            {
+                Melon<RaidersDropLootMelon>.Logger.Msg($"Spawned loot item of '{itemType}' at {position}.");
+            }
         }
 
         #endregion Private Methods

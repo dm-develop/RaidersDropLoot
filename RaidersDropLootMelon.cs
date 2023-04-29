@@ -8,10 +8,13 @@ namespace dm.ffmods.raidersdroploot
     {
         #region Fields
 
+        public const string ConfigPath = "UserData/RaidersDropLootConfig.cfg";
+        public static MelonPreferences_Category LootPrefs;
         private float checkIntervalInSeconds = 3f;
         private ConfigManager configManager;
         private bool frontierHasLoaded = false;
         private GameManager gameManager;
+        private MelonPreferences_Entry<bool> isVerboseEntry;
         private LootManager lootManager;
         private PrefabManager prefabManager;
         private bool setupDone0 = false;
@@ -21,7 +24,6 @@ namespace dm.ffmods.raidersdroploot
         private bool setupDone4 = false;
         private LootItemSpawnManager spawnManager;
         private float timeSinceLastCheckInSeconds = 0f;
-
         private bool verbose = false;
 
         #endregion Fields
@@ -37,12 +39,24 @@ namespace dm.ffmods.raidersdroploot
 
         #region Public Methods
 
+        public List<MelonPreferences_Entry> GetPrefEntriesToIgnore()
+        {
+            return new List<MelonPreferences_Entry> { isVerboseEntry };
+        }
+
         public override void OnInitializeMelon()
         {
             LoggerInstance.Msg("Setting up RaidersDropLoot mod ...");
             prefabManager = new PrefabManager();
             lootManager = new LootManager();
             configManager = new ConfigManager();
+
+            LootPrefs = MelonPreferences.CreateCategory("RaidersDropLoot");
+            LootPrefs.SetFilePath(ConfigPath);
+
+            // set debug flag based on config file
+            isVerboseEntry = LootPrefs.CreateEntry<bool>("isVerbose", false);
+            verbose = isVerboseEntry.Value;
         }
 
         public override void OnLateUpdate()
@@ -132,7 +146,7 @@ namespace dm.ffmods.raidersdroploot
             }
 
             // parse config file
-            configManager.InitConfig(lootManager);
+            configManager.InitConfig(lootManager, LootPrefs);
 
             if (!configManager.IsInitialised)
             {
