@@ -77,7 +77,7 @@ namespace dm.ffmods.raidersdroploot
             foreach (var item in table.Drops)
             {
                 int roll = Random.Range(0, 100 + 1);
-                if (roll <= item.Value)
+                if (roll < item.Value)
                 {
                     toSpawn.Add(item.Key);
                 }
