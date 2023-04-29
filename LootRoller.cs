@@ -8,6 +8,19 @@ namespace dm.ffmods.raidersdroploot
 
     public class LootRoller
     {
+        #region Fields
+
+        public static Dictionary<string, RaiderType> UnitNames = new Dictionary<string, RaiderType>
+        {
+            { "RaiderUnit_Brawler", RaiderType.Brawler },
+            { "RaiderUnit_Thief", RaiderType.Thief },
+            { "RaiderUnit_Warrior", RaiderType.Warrior },
+            { "RaiderUnit_Elite", RaiderType.Elite },
+            { "RaiderUnit_Champion", RaiderType.Champion}
+        };
+
+        #endregion Fields
+
         #region Public Constructors
 
         public LootRoller()
@@ -26,34 +39,18 @@ namespace dm.ffmods.raidersdroploot
 
         #region Public Methods
 
-        public RaiderType DetermineRaiderType(string unitName)
+        public static RaiderType DetermineRaiderType(string unitName)
         {
-            switch (unitName)
+            foreach (string key in UnitNames.Keys.OrderByDescending(s => s.Length))
             {
-                case "RaiderUnit_Brawler":
-                    return RaiderType.Brawler;
-                    break;
-
-                case "RaiderUnit_Thief":
-                    return RaiderType.Thief;
-                    break;
-
-                case "RaiderUnit_Warrior":
-                    return RaiderType.Warrior;
-                    break;
-
-                case "RaiderUnit_Champion":
-                    return RaiderType.Champion;
-                    break;
-
-                case "RaiderUnit_Elite":
-                    return RaiderType.Elite;
-                    break;
-
-                default:
-                    Melon<RaidersDropLootMelon>.Logger.Warning($"Raider type {unitName} unknown, treating as '{RaiderType.Brawler}'.");
-                    return RaiderType.Brawler;
+                if (unitName.StartsWith(key))
+                {
+                    return UnitNames[key];
+                }
             }
+            // if we can't find the name, return default
+            Melon<RaidersDropLootMelon>.Logger.Warning($"Raider type {unitName} unknown, treating as '{RaiderType.Brawler}'.");
+            return RaiderType.Brawler;
         }
 
         public List<LootItem> RollLoot(RaiderType type)
