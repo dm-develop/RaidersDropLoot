@@ -6,9 +6,8 @@ namespace dm.ffmods.raidersdroploot
     {
         #region Fields
 
-        public static MelonPreferences_Category lootPrefs;
-        private const string configPath = "UserData/RaidersDropLootConfig.cfg";
         private bool isInitialised = false;
+        private MelonPreferences_Category lootPrefs;
         private LootManager lootRoller;
 
         #endregion Fields
@@ -21,12 +20,10 @@ namespace dm.ffmods.raidersdroploot
 
         #region Public Methods
 
-        public void InitConfig(LootManager lootRoller)
+        public void InitConfig(LootManager lootRoller, MelonPreferences_Category lootPrefs)
         {
             this.lootRoller = lootRoller;
-
-            lootPrefs = MelonPreferences.CreateCategory("RaidersDropLoot");
-            lootPrefs.SetFilePath(configPath);
+            this.lootPrefs = lootPrefs;
 
             CreateEntries();
 
@@ -71,8 +68,10 @@ namespace dm.ffmods.raidersdroploot
 
         private void UpdateTablesFromPrefs()
         {
+            var toIgnore = Melon<RaidersDropLootMelon>.Instance.GetPrefEntriesToIgnore();
+            var entries = lootPrefs.Entries.Except(toIgnore);
             // extract table from each entry
-            foreach (var entry in lootPrefs.Entries)
+            foreach (var entry in entries)
             {
                 var table = ((SerialisiableLootTable)entry.BoxedValue).Deserialise();
                 UpdateTable(table);
