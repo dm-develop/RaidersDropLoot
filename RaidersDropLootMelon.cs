@@ -4,13 +4,14 @@ using UnityEngine;
 
 namespace dm.ffmods.raidersdroploot
 {
-    public class RaidersDropLoot : MelonMod
+    public class RaidersDropLootMelon : MelonMod
     {
         #region Fields
 
         private float checkIntervalInSeconds = 1f;
         private bool frontierHasLoaded = false;
         private GameManager gameManager;
+        private LootRoller lootRoller;
         private ModSetup modSetup;
         private LootItemSpawnManager spawnManager;
         private float timeSinceLastCheckInSeconds = 0f;
@@ -19,8 +20,8 @@ namespace dm.ffmods.raidersdroploot
 
         #region Properties
 
-        public GameManager GameManager { get => gameManager; }
         public bool HasInitalised { get; private set; }
+        public LootRoller LootRoller { get => lootRoller; }
         public LootItemSpawnManager SpawnManager { get => spawnManager; }
 
         #endregion Properties
@@ -31,6 +32,7 @@ namespace dm.ffmods.raidersdroploot
         {
             LoggerInstance.Msg("Raiders drop loot mod loaded!");
             modSetup = new ModSetup();
+            lootRoller = new LootRoller();
         }
 
         public override void OnLateUpdate()

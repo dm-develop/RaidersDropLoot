@@ -10,30 +10,35 @@ namespace dm.ffmods.raidersdroploot
     {
         #region Private Methods
 
-        private static void CreateSimpleWeapon(Vector3 position)
-        {
-            if (!Melon<RaidersDropLoot>.Instance.HasInitalised)
-            {
-                Melon<RaidersDropLoot>.Logger.Msg($"mod not initialised, ignoring spawn call ...");
-                return;
-            }
-
-            Melon<RaidersDropLoot>.Instance.SpawnManager.SpawnLootItem(LootItem.crudeWeapon, position);
-        }
-
         //todo: check if it also works with postfix
         // link to harmony docs: https://harmony.pardeike.net/articles/patching-prefix.html
         private static bool Prefix(float damageTaken, GameObject damageCauser, Raider __instance)
         {
+            if (!Melon<RaidersDropLootMelon>.Instance.HasInitalised)
+            {
+                Melon<RaidersDropLootMelon>.Logger.Warning($"mod not initialised, skipping Raider OnDeath hook ...");
+                return true;
+            }
+
             // __instance gets us the instance of the Raider class
             Raider instance = __instance;
 
-            // get info from instance
-            string name = instance.raiderUnitData.name;
+            // get position from instance
             Vector3 position = instance.pawnInstance.transform.position;
 
-            //create sword where raider died
-            CreateSimpleWeapon(position);
+            // get LootRoller instance
+            var lootRoller = Melon<RaidersDropLootMelon>.Instance.LootRoller;
+
+            // determine loot
+            RaiderType type = lootRoller.DetermineRaiderType(instance.raiderUnitData.name);
+            var loot = lootRoller.RollLoot(type);
+
+            // spawn loot
+            var spawner = Melon<RaidersDropLootMelon>.Instance.SpawnManager;
+            foreach (var item in loot)
+            {
+                spawner.SpawnLootItem(item, position);
+            }
 
             // we want original OnDeath to run, so we set return value to true here for Harmony
             return true;
