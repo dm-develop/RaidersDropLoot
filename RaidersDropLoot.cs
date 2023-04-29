@@ -1,8 +1,6 @@
 ﻿using Il2Cpp;
-using Il2CppInterop.Runtime;
 using MelonLoader;
 using UnityEngine;
-using Type = Il2CppSystem.Type;
 
 namespace dm.ffmods.raidersdroploot
 {
@@ -10,11 +8,10 @@ namespace dm.ffmods.raidersdroploot
     {
         #region Fields
 
-        public SpawnConfig Config;
         public GameManager GameManager;
-
         private float checkIntervalInSeconds = 1f;
         private bool frontierHasLoaded = false;
+        private ModSetup modSetup;
         private float timeSinceLastCheckInSeconds = 0f;
 
         #endregion Fields
@@ -30,6 +27,7 @@ namespace dm.ffmods.raidersdroploot
         public override void OnInitializeMelon()
         {
             LoggerInstance.Msg("Raiders drop loot mod loaded!");
+            modSetup = new ModSetup();
         }
 
         public override void OnLateUpdate()
@@ -52,7 +50,7 @@ namespace dm.ffmods.raidersdroploot
             // only continue if GaneManager can been found
             if ((System.Object)(object)GameObject.Find("GameManager") == (System.Object)null)
             {
-                LoggerInstance.Msg($"could not find gameManager instance, will try again in {checkIntervalInSeconds}...");
+                LoggerInstance.Msg($"could not find gameManager instance, will try again in {checkIntervalInSeconds} ...");
                 timeSinceLastCheckInSeconds = 0;
                 return;
             }
@@ -60,17 +58,17 @@ namespace dm.ffmods.raidersdroploot
             GameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
             // only continue if sword can be found
-            if (!TryFindPrefab())
+            if (!modSetup.TryFindItemPrefabs())
             {
-                LoggerInstance.Msg($"could not find sword, will try again in {checkIntervalInSeconds}...");
+                LoggerInstance.Msg($"could not find all item prefabs, will try again in {checkIntervalInSeconds} ...");
                 timeSinceLastCheckInSeconds = 0;
                 return;
             }
 
-            if (TryFindPrefab())
+            if (!modSetup.ArePrefabsMissing)
             {
-                LoggerInstance.Msg($"sword prefab found, creating config...");
-                Config = CreateConfig(GameManager);
+                LoggerInstance.Msg($"all prefabs found, creating SpawnConfigs ...");
+                Config = modSetup.CreateConfigs(GameManager);
             }
 
             HasInitalised = true;
@@ -87,54 +85,5 @@ namespace dm.ffmods.raidersdroploot
         }
 
         #endregion Public Methods
-
-        #region Private Methods
-
-        private static bool TryFindPrefab()
-        {
-            Type val = Il2CppType.Of<GameObject>();
-            var allObjects = Resources.FindObjectsOfTypeAll(val);
-
-            foreach (var obj in allObjects)
-            {
-                if (obj.Cast<GameObject>().name == "Melee_Sword01A_Resource")
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private WeaponResource AssignPrefab()
-        {
-            Type val = Il2CppType.Of<GameObject>();
-            var allObjects = Resources.FindObjectsOfTypeAll(val);
-
-            foreach (var obj in allObjects)
-            {
-                if (obj.Cast<GameObject>().name == "Melee_Sword01A_Resource")
-                {
-                    return obj.Cast<GameObject>().GetComponentInChildren<WeaponResource>();
-                }
-            }
-            // should never be reached, because we check before
-            return new WeaponResource();
-        }
-
-        private SpawnConfig CreateConfig(GameManager gameManager)
-        {
-            WeaponResource prefab = AssignPrefab();
-
-            //string guid = "4e93b64a-d487-42c6-bcca-c266dfa8370e"; // sword guid maybe;
-            return new SpawnConfig(prefab, gameManager.workBucketManager.itemWeapon, action);
-
-            // the action to package into the config
-            void action(DroppedResource instance)
-            {
-                GameManager.resourceManager.AddOrRemoveWeaponResource(instance.Cast<WeaponResource>(), false);
-            }
-        }
-
-        #endregion Private Methods
     }
 }
