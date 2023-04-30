@@ -1,13 +1,7 @@
 
-# What is this even?
+# Where am I?
 This is the development repository for the RaidersDropLoot mod for farthest frontier.
+You can also find this mod on [nexusmods](https://www.nexusmods.com/farthestfrontier/mods/39)!
 
-# How do I install the mod?
-First of all, you will need to install [Melon Loader](https://melonwiki.xyz/#/),
-a universal mod loader for unity games.
-Follow their [installation instructions](https://melonwiki.xyz/#/?id=automated-installation)
-and run the game at least once to make sure everything is set up correctly. 
-
-Then copy the RaidersDropLoot.dll into the "Mods" folder of the farthest frontier directory.
-
+# Would you like to learn more?
 For more info, visit the [wiki](https://github.com/dm-develop/RaidersDropLoot/wiki)!
