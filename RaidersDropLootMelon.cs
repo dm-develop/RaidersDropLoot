@@ -22,7 +22,7 @@ namespace dm.ffmods.raidersdroploot
         private bool setupDone2 = false;
         private bool setupDone3 = false;
         private bool setupDone4 = false;
-        private LootItemSpawnManager spawnManager;
+        private SpawnManager spawnManager;
         private float timeSinceLastCheckInSeconds = 0f;
         private bool verbose = false;
 
@@ -32,7 +32,7 @@ namespace dm.ffmods.raidersdroploot
 
         public bool HasInitalised { get; private set; }
         public LootManager LootManager { get => lootManager; }
-        public LootItemSpawnManager SpawnManager { get => spawnManager; }
+        public SpawnManager SpawnManager { get => spawnManager; }
         public bool Verbose { get => verbose; set => verbose = value; }
 
         #endregion Properties
@@ -104,7 +104,7 @@ namespace dm.ffmods.raidersdroploot
             }
             // find GaneManager
             gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-            spawnManager = new LootItemSpawnManager(gameManager);
+            spawnManager = new SpawnManager(gameManager);
 
             // print progress
             if (!setupDone2)

@@ -7,8 +7,8 @@ namespace dm.ffmods.raidersdroploot
         #region Fields
 
         private bool isInitialised = false;
+        private LootManager lootManager;
         private MelonPreferences_Category lootPrefs;
-        private LootManager lootRoller;
 
         #endregion Fields
 
@@ -20,9 +20,9 @@ namespace dm.ffmods.raidersdroploot
 
         #region Public Methods
 
-        public void InitConfig(LootManager lootRoller, MelonPreferences_Category lootPrefs)
+        public void InitConfig(LootManager lootManager, MelonPreferences_Category lootPrefs)
         {
-            this.lootRoller = lootRoller;
+            this.lootManager = lootManager;
             this.lootPrefs = lootPrefs;
 
             CreateEntries();
@@ -38,7 +38,7 @@ namespace dm.ffmods.raidersdroploot
 
         private void CreateEntries()
         {
-            foreach (var item in lootRoller.LootTables)
+            foreach (var item in lootManager.LootTables)
             {
                 _ = CreateMelonPref(item.Value);
             }
@@ -56,14 +56,14 @@ namespace dm.ffmods.raidersdroploot
 
         private void UpdateTable(LootTable table)
         {
-            if (lootRoller.LootTables.Keys.Contains(table.RaiderType))
+            if (lootManager.LootTables.Keys.Contains(table.RaiderType))
             {
                 if (Melon<RaidersDropLootMelon>.Instance.Verbose)
                 {
                     Melon<RaidersDropLootMelon>.Logger.Msg($"overwriting loot table for '{table.RaiderType}' ...");
                 }
             }
-            lootRoller.UpdateLootTable(table);
+            lootManager.UpdateLootTable(table);
         }
 
         private void UpdateTablesFromPrefs()
