@@ -47,57 +47,33 @@ namespace dm.ffmods.raidersdroploot
         {
             foreach (var item in ItemPrefabs)
             {
-                // todo: get amount from config
-                PrepPackage(item.Key, item.Value, 1);
+                PrepPackage(item.Key, item.Value);
             }
         }
 
-        public void SpawnLootItem(LootItem item, Vector3 position)
+        public void SpawnLootItem(LootItem item, Vector3 position, uint amount)
         {
             if (!SpawnPackages.Keys.Contains(item))
             {
                 Melon<RaidersDropLootMelon>.Logger.Warning($"cannot spawn '{item}', no spawn package found!");
                 return;
             }
-            SpawnItem(position, item);
+            SpawnItem(position, item, amount);
         }
 
         #endregion Public Methods
 
         #region Private Methods
 
-        private void AddResourceInstanceToManager(LootItem itemType, DroppedResource instance)
-        {
-            Type type = LookUpResourceType(itemType);
-
-            var resName = LookUpItemName(itemType);
-
-            string methodName = $"AddOrRemove{resName}Resource";
-
-            var resManager = gameManager.resourceManager;
-
-            MethodInfo methodInfo = resManager.GetType().GetMethod(methodName);
-
-            // crash is here!
-
-            try
-            {
-                var instance_specific = Convert.ChangeType(instance, type);
-                var paramArray = new object[] { instance_specific, false };
-                methodInfo.Invoke(resManager, paramArray);
-            }
-            catch (Exception)
-            {
-                Melon<RaidersDropLootMelon>.Logger.Error($"could not convert instance to type {type}'!");
-            }
-        }
-
-        private void InitInstance(SpawnPackage package, DroppedResource instance)
+        private void InitInstance(SpawnPackage package, DroppedResource instance, uint amount)
         {
             ItemStorage itemStorage = instance.GetComponent<ReservableItemStorage>().itemStorage;
-            ItemBundle val = new ItemBundle(package.Item, package.Amount, 100u);
+
+            // we could put this into the settings in the future
+            var condition = 100u;
+
+            ItemBundle val = new ItemBundle(package.Item, amount, condition);
             itemStorage.AddItems(val);
-            package.Action(package.Name, instance);
             package.WorkBucketIdentifiers.ForEach(delegate (WorkBucketIdentifier identifier)
             {
                 instance.AddToWorkBucket(gameManager.workBucketManager.Cast<IOwnerOfWorkBuckets>(), identifier, 0f);
@@ -129,7 +105,7 @@ namespace dm.ffmods.raidersdroploot
             return LootResourceTypes[itemType];
         }
 
-        private void PrepPackage(LootItem itemType, GameObject prefab, uint amount)
+        private void PrepPackage(LootItem itemType, GameObject prefab)
         {
             Type type = LookUpResourceType(itemType);
 
@@ -146,11 +122,10 @@ namespace dm.ffmods.raidersdroploot
             new SpawnPackage(
                 itemType,
                 prefab,
-                AddResourceInstanceToManager,
-                item, amount));
+                item));
         }
 
-        private void SpawnItem(Vector3 position, LootItem itemType)
+        private void SpawnItem(Vector3 position, LootItem itemType, uint amount)
         {
             var package = SpawnPackages[itemType];
 
@@ -160,7 +135,7 @@ namespace dm.ffmods.raidersdroploot
             instance.transform.localPosition = Vector3.zero;
             instance.transform.position = position;
 
-            InitInstance(package, instance);
+            InitInstance(package, instance, amount);
             if (Melon<RaidersDropLootMelon>.Instance.Verbose)
             {
                 Melon<RaidersDropLootMelon>.Logger.Msg($"Spawned loot item of '{itemType}' at {position}.");

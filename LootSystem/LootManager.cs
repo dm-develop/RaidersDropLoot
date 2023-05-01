@@ -88,8 +88,13 @@ namespace dm.ffmods.raidersdroploot
             {
                 foreach (var item in table.DropTable)
                 {
-                    Melon<RaidersDropLootMelon>.Logger.Warning($"test: rolling for item '{item.Key}' with droprate {item.Value.DropRateInPercent}%");
                     int roll = Random.Range(1, 100 + 1);
+
+                    if (Melon<RaidersDropLootMelon>.Instance.Verbose)
+                    {
+                        Melon<RaidersDropLootMelon>.Logger.Warning($"rolled {roll} for item '{item.Key}' " +
+                            $"with droprate {item.Value.DropRateInPercent}%");
+                    }
                     if (roll <= item.Value.DropRateInPercent)
                     {
                         toSpawn.Add(item.Key);

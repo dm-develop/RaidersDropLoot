@@ -7,8 +7,6 @@ namespace dm.ffmods.raidersdroploot
     {
         #region Fields
 
-        public readonly Action<LootItem, DroppedResource> Action;
-        public readonly uint Amount;
         public readonly Item Item;
         public readonly LootItem Name;
         public readonly GameObject Prefab;
@@ -18,13 +16,11 @@ namespace dm.ffmods.raidersdroploot
 
         #region Public Constructors
 
-        public SpawnPackage(LootItem name, GameObject prefab, Action<LootItem, DroppedResource> action, Item item, uint amount)
+        public SpawnPackage(LootItem name, GameObject prefab, Item item)
         {
             Name = name;
             Prefab = prefab;
-            Action = action;
             Item = item;
-            Amount = amount;
             Resource = prefab.GetComponent<DroppedResource>();
         }
 
