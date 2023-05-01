@@ -1,4 +1,5 @@
-﻿using MelonLoader;
+﻿using Il2Cpp;
+using MelonLoader;
 using Random = UnityEngine.Random;
 
 namespace dm.ffmods.raidersdroploot
@@ -58,28 +59,41 @@ namespace dm.ffmods.raidersdroploot
 
         public bool IsLootable(RaiderType type)
         {
-            return LootTables.ContainsKey(type);
+            if (!LootTables.ContainsKey(type))
+            {
+                return false;
+            }
+            if (!LootTables[type].DropTable.Any())
+            {
+                return false;
+            }
+            return true;
         }
 
         public List<LootItem> RollLoot(RaiderType type)
         {
+            List<LootItem> toSpawn = new List<LootItem>();
             if (!IsLootable(type))
             {
                 if (Melon<RaidersDropLootMelon>.Instance.Verbose)
                 {
                     Melon<RaidersDropLootMelon>.Logger.Warning($"'{type}' is not lootable, cannot roll loot!");
                 }
-                return new List<LootItem>();
+                return toSpawn;
             }
 
             LootTable table = LootTables[type];
-            List<LootItem> toSpawn = new List<LootItem>();
-            foreach (var item in table.Drops)
+
+            if (table.DropTable.Any())
             {
-                int roll = Random.Range(0, 100 + 1);
-                if (roll < item.Value)
+                foreach (var item in table.DropTable)
                 {
-                    toSpawn.Add(item.Key);
+                    Melon<RaidersDropLootMelon>.Logger.Warning($"test: rolling for item '{item.Key}' with droprate {item.Value.DropRateInPercent}%");
+                    int roll = Random.Range(1, 100 + 1);
+                    if (roll <= item.Value.DropRateInPercent)
+                    {
+                        toSpawn.Add(item.Key);
+                    }
                 }
             }
             return toSpawn;
@@ -88,14 +102,13 @@ namespace dm.ffmods.raidersdroploot
         public void UpdateLootTable(LootTable table)
         {
             var type = table.RaiderType;
-            if (!table.Drops.Any())
+            if (!table.DropTable.Any())
             {
                 if (Melon<RaidersDropLootMelon>.Instance.Verbose)
                 {
                     Melon<RaidersDropLootMelon>.Logger.Warning($"Received empty loot table for '{type}'," +
                             $" removing entry from loot table list.");
                 }
-
                 LootTables.Remove(type);
                 return;
             }
@@ -120,85 +133,30 @@ namespace dm.ffmods.raidersdroploot
 
         private void CreateDefaultLootTables()
         {
-            Dictionary<LootItem, byte> brawlerLoot = new Dictionary<LootItem, byte>()
+            Dictionary<LootItem, TableEntry> brawlerLoot = new Dictionary<LootItem, TableEntry>()
             {
-                { LootItem.crudeWeapon, 50 },
-                { LootItem.weapon, 5 },
-                { LootItem.heavyWeapon, 0 },
-                { LootItem.shield, 5 },
-                { LootItem.leatherCoat, 30 },
-                { LootItem.hauberk, 0 },
-                { LootItem.plateMail, 0 },
-                { LootItem.bow, 0 },
-                { LootItem.crossbow, 0 },
-                { LootItem.arrows, 0 },
-                { LootItem.bread, 5},
-                { LootItem.smokedMeat, 5},
-                { LootItem.gold, 0}
+                { LootItem.crudeWeapon, new TableEntry(LootItem.crudeWeapon.ToString(), 70, 1 )},
+                { LootItem.shield, new TableEntry(LootItem.shield.ToString(), 5, 1 )},
+                { LootItem.smokedMeat, new TableEntry(LootItem.smokedMeat.ToString(), 5, 1 )},
+                { LootItem.leatherCoat, new TableEntry(LootItem.leatherCoat.ToString(), 40, 1 )},
             };
-            Dictionary<LootItem, byte> thiefLoot = new Dictionary<LootItem, byte>()
+            Dictionary<LootItem, TableEntry> thiefLoot = new Dictionary<LootItem, TableEntry>()
             {
-                { LootItem.crudeWeapon, 0 },
-                { LootItem.weapon, 5 },
-                { LootItem.heavyWeapon, 0 },
-                { LootItem.shield, 0 },
-                { LootItem.leatherCoat, 30 },
-                { LootItem.hauberk, 0 },
-                { LootItem.plateMail, 0 },
-                { LootItem.bow, 40 },
-                { LootItem.crossbow, 0 },
-                { LootItem.arrows, 60 },
-                { LootItem.bread, 5},
-                { LootItem.smokedMeat, 5},
-                { LootItem.gold, 50}
+                { LootItem.arrows, new TableEntry(LootItem.arrows.ToString(), 50, 10 )},
+                { LootItem.bow, new TableEntry(LootItem.bow.ToString(), 50, 1 )},
+                { LootItem.gold, new TableEntry(LootItem.gold.ToString(), 100, 20 )},
             };
-            Dictionary<LootItem, byte> warriorLoot = new Dictionary<LootItem, byte>()
+            Dictionary<LootItem, TableEntry> warriorLoot = new Dictionary<LootItem, TableEntry>()
             {
-                { LootItem.crudeWeapon, 0 },
-                { LootItem.weapon, 60 },
-                { LootItem.heavyWeapon, 0 },
-                { LootItem.shield, 20 },
-                { LootItem.leatherCoat, 30 },
-                { LootItem.hauberk, 30 },
-                { LootItem.plateMail, 0 },
-                { LootItem.bow, 0 },
-                { LootItem.crossbow, 10 },
-                { LootItem.arrows, 10 },
-                { LootItem.bread, 5},
-                { LootItem.smokedMeat, 5},
-                { LootItem.gold, 5}
+                { LootItem.shield, new TableEntry(LootItem.shield.ToString(), 5, 1 )},
             };
-            Dictionary<LootItem, byte> eliteLoot = new Dictionary<LootItem, byte>()
+            Dictionary<LootItem, TableEntry> eliteLoot = new Dictionary<LootItem, TableEntry>()
             {
-                { LootItem.crudeWeapon, 0 },
-                { LootItem.weapon, 30 },
-                { LootItem.heavyWeapon, 10 },
-                { LootItem.shield, 20 },
-                { LootItem.leatherCoat, 0 },
-                { LootItem.hauberk, 10 },
-                { LootItem.plateMail, 10 },
-                { LootItem.bow, 0 },
-                { LootItem.crossbow, 10 },
-                { LootItem.arrows, 10 },
-                { LootItem.bread, 5},
-                { LootItem.smokedMeat, 5},
-                { LootItem.gold, 10}
+                { LootItem.shield, new TableEntry(LootItem.shield.ToString(), 5, 1 )},
             };
-            Dictionary<LootItem, byte> championLoot = new Dictionary<LootItem, byte>()
+            Dictionary<LootItem, TableEntry> championLoot = new Dictionary<LootItem, TableEntry>()
             {
-                { LootItem.crudeWeapon, 0 },
-                { LootItem.weapon, 30 },
-                { LootItem.heavyWeapon, 20 },
-                { LootItem.shield, 20 },
-                { LootItem.leatherCoat, 0 },
-                { LootItem.hauberk, 10 },
-                { LootItem.plateMail, 20 },
-                { LootItem.bow, 0 },
-                { LootItem.crossbow, 10 },
-                { LootItem.arrows, 10 },
-                { LootItem.bread, 5},
-                { LootItem.smokedMeat, 5},
-                { LootItem.gold, 20}
+                { LootItem.shield, new TableEntry(LootItem.shield.ToString(), 5, 1 )},
             };
 
             LootTables.Add(RaiderType.Brawler, new LootTable(RaiderType.Brawler, brawlerLoot));

@@ -27,7 +27,7 @@ namespace dm.ffmods.raidersdroploot
             { LootItem.gold, typeof(GoldIngotResource) }
         };
 
-        public Dictionary<LootItem, LootItemSpawnPackage> SpawnPackages = new Dictionary<LootItem, LootItemSpawnPackage>();
+        public Dictionary<LootItem, SpawnPackage> SpawnPackages = new Dictionary<LootItem, SpawnPackage>();
         private GameManager gameManager;
 
         #endregion Fields
@@ -74,26 +74,33 @@ namespace dm.ffmods.raidersdroploot
 
             string methodName = $"AddOrRemove{resName}Resource";
 
-            // Create an instance of the class that contains the method
             var resManager = gameManager.resourceManager;
 
-            // Get the method info using reflection
             MethodInfo methodInfo = resManager.GetType().GetMethod(methodName);
 
-            // Call the method using reflection
-            var paramArray = new object[] { Convert.ChangeType(instance, type), false };
-            methodInfo.Invoke(resManager, paramArray);
+            // crash is here!
+
+            try
+            {
+                var instance_specific = Convert.ChangeType(instance, type);
+                var paramArray = new object[] { instance_specific, false };
+                methodInfo.Invoke(resManager, paramArray);
+            }
+            catch (Exception)
+            {
+                Melon<RaidersDropLootMelon>.Logger.Error($"could not convert instance to type {type}'!");
+            }
         }
 
-        private void InitInstance(LootItemSpawnPackage package, DroppedResource instance)
+        private void InitInstance(SpawnPackage package, DroppedResource instance)
         {
             ItemStorage itemStorage = instance.GetComponent<ReservableItemStorage>().itemStorage;
             ItemBundle val = new ItemBundle(package.Item, package.Amount, 100u);
             itemStorage.AddItems(val);
             package.Action(package.Name, instance);
-            package.WorkBucketIdentifiers.ForEach(delegate (WorkBucketIdentifier i)
+            package.WorkBucketIdentifiers.ForEach(delegate (WorkBucketIdentifier identifier)
             {
-                instance.AddToWorkBucket(gameManager.workBucketManager.Cast<IOwnerOfWorkBuckets>(), i, 0f);
+                instance.AddToWorkBucket(gameManager.workBucketManager.Cast<IOwnerOfWorkBuckets>(), identifier, 0f);
             });
             instance.CheckWorkAvailability();
         }
@@ -124,12 +131,6 @@ namespace dm.ffmods.raidersdroploot
 
         private void PrepPackage(LootItem itemType, GameObject prefab, uint amount)
         {
-            if (amount < 1)
-            {
-                amount = 1;
-                // write warning message
-            }
-
             Type type = LookUpResourceType(itemType);
 
             string propName = $"item{LookUpItemName(itemType)}";
@@ -142,7 +143,7 @@ namespace dm.ffmods.raidersdroploot
             Item item = (Item)propInfo.GetValue(workBucketManager);
 
             SpawnPackages.Add(itemType,
-            new LootItemSpawnPackage(
+            new SpawnPackage(
                 itemType,
                 prefab,
                 AddResourceInstanceToManager,

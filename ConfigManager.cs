@@ -1,4 +1,5 @@
-﻿using MelonLoader;
+﻿using Il2Cpp;
+using MelonLoader;
 
 namespace dm.ffmods.raidersdroploot
 {
@@ -46,7 +47,7 @@ namespace dm.ffmods.raidersdroploot
 
         private MelonPreferences_Entry CreateMelonPref(LootTable table)
         {
-            var _table = table.MakeSerialisable();
+            var _table = SerialisiableLootTable.CreateFromLootTable(table);
             return lootPrefs.CreateEntry<SerialisiableLootTable>(
             _table.RaiderType,
             _table,

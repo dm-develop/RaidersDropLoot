@@ -30,19 +30,19 @@ namespace dm.ffmods.raidersdroploot
             Vector3 position = instance.pawnInstance.transform.position;
 
             // get LootRoller instance
-            var lootRoller = Melon<RaidersDropLootMelon>.Instance.LootManager;
+            var lootManager = Melon<RaidersDropLootMelon>.Instance.LootManager;
 
             // determine loot
             RaiderType type = LootManager.DetermineRaiderTypeFromUnitName(instance.raiderUnitData.name);
 
             // check if there is a loot table for this raider type
-            if (!lootRoller.IsLootable(type))
+            if (!lootManager.IsLootable(type))
             {
                 return true;
             }
-            // get loor for raider typer
-            var loot = lootRoller.RollLoot(type);
 
+            // get loor for raider typer
+            var loot = lootManager.RollLoot(type);
             // check if there really is loot
             if (!loot.Any())
             {
@@ -51,9 +51,12 @@ namespace dm.ffmods.raidersdroploot
 
             // spawn it
             var spawner = Melon<RaidersDropLootMelon>.Instance.SpawnManager;
-            foreach (var item in loot)
+            if (loot.Any())
             {
-                spawner.SpawnLootItem(item, position);
+                foreach (var item in loot)
+                {
+                    spawner.SpawnLootItem(item, position);
+                }
             }
 
             // we want original OnDeath to run, so we set return value to true here for Harmony

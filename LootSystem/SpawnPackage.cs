@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace dm.ffmods.raidersdroploot
 {
-    public class LootItemSpawnPackage
+    public class SpawnPackage
     {
         #region Fields
 
@@ -18,7 +18,7 @@ namespace dm.ffmods.raidersdroploot
 
         #region Public Constructors
 
-        public LootItemSpawnPackage(LootItem name, GameObject prefab, Action<LootItem, DroppedResource> action, Item item, uint amount)
+        public SpawnPackage(LootItem name, GameObject prefab, Action<LootItem, DroppedResource> action, Item item, uint amount)
         {
             Name = name;
             Prefab = prefab;
