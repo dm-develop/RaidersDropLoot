@@ -92,7 +92,7 @@ namespace dm.ffmods.raidersdroploot
 
                     if (Melon<RaidersDropLootMelon>.Instance.Verbose)
                     {
-                        Melon<RaidersDropLootMelon>.Logger.Warning($"rolled {roll} for item '{item.Key}' " +
+                        Melon<RaidersDropLootMelon>.Logger.Msg($"rolled {roll} for item '{item.Key}' " +
                             $"with droprate {item.Value.DropRateInPercent}%");
                     }
                     if (roll <= item.Value.DropRateInPercent)
@@ -144,24 +144,49 @@ namespace dm.ffmods.raidersdroploot
                 { LootItem.shield, new TableEntry(LootItem.shield.ToString(), 5, 1 )},
                 { LootItem.smokedMeat, new TableEntry(LootItem.smokedMeat.ToString(), 5, 1 )},
                 { LootItem.leatherCoat, new TableEntry(LootItem.leatherCoat.ToString(), 40, 1 )},
+                { LootItem.linenClothes, new TableEntry(LootItem.linenClothes.ToString(), 20, 1 )},
+                { LootItem.shoes, new TableEntry(LootItem.shoes.ToString(), 60, 1 )},
             };
             Dictionary<LootItem, TableEntry> thiefLoot = new Dictionary<LootItem, TableEntry>()
             {
-                { LootItem.arrows, new TableEntry(LootItem.arrows.ToString(), 50, 10 )},
-                { LootItem.bow, new TableEntry(LootItem.bow.ToString(), 50, 1 )},
-                { LootItem.gold, new TableEntry(LootItem.gold.ToString(), 100, 20 )},
+                { LootItem.arrows, new TableEntry(LootItem.arrows.ToString(), 60, 10 )},
+                { LootItem.bow, new TableEntry(LootItem.bow.ToString(), 60, 1 )},
+                { LootItem.gold, new TableEntry(LootItem.gold.ToString(), 50, 10 )},
+                { LootItem.leatherCoat, new TableEntry(LootItem.leatherCoat.ToString(), 40, 1 )},
+                { LootItem.linenClothes, new TableEntry(LootItem.linenClothes.ToString(), 20, 1 )},
+                { LootItem.shoes, new TableEntry(LootItem.shoes.ToString(), 60, 1 )},
             };
             Dictionary<LootItem, TableEntry> warriorLoot = new Dictionary<LootItem, TableEntry>()
             {
-                { LootItem.shield, new TableEntry(LootItem.shield.ToString(), 5, 1 )},
+                { LootItem.shoes, new TableEntry(LootItem.shoes.ToString(), 60, 1 )},
+                { LootItem.shield, new TableEntry(LootItem.shield.ToString(), 40, 1 )},
+                { LootItem.weapon, new TableEntry(LootItem.weapon.ToString(), 60, 1 )},
+                { LootItem.linenClothes, new TableEntry(LootItem.linenClothes.ToString(), 20, 1 )},
+                { LootItem.hauberk, new TableEntry(LootItem.hauberk.ToString(), 20, 1 )},
             };
             Dictionary<LootItem, TableEntry> eliteLoot = new Dictionary<LootItem, TableEntry>()
             {
-                { LootItem.shield, new TableEntry(LootItem.shield.ToString(), 5, 1 )},
+                { LootItem.shoes, new TableEntry(LootItem.shoes.ToString(), 60, 1 )},
+                { LootItem.shield, new TableEntry(LootItem.shield.ToString(), 20, 1 )},
+                { LootItem.weapon, new TableEntry(LootItem.weapon.ToString(), 60, 1 )},
+                { LootItem.linenClothes, new TableEntry(LootItem.linenClothes.ToString(), 20, 1 )},
+                { LootItem.hauberk, new TableEntry(LootItem.hauberk.ToString(), 20, 1 )},
+                { LootItem.heavyWeapon, new TableEntry(LootItem.heavyWeapon.ToString(), 10, 1 )},
+                { LootItem.gold, new TableEntry(LootItem.gold.ToString(), 50, 10 )},
+                { LootItem.crossbow, new TableEntry(LootItem.crossbow.ToString(), 30, 1 )},
+                { LootItem.arrows, new TableEntry(LootItem.arrows.ToString(), 30, 10 )},
             };
             Dictionary<LootItem, TableEntry> championLoot = new Dictionary<LootItem, TableEntry>()
             {
-                { LootItem.shield, new TableEntry(LootItem.shield.ToString(), 5, 1 )},
+                { LootItem.shoes, new TableEntry(LootItem.shoes.ToString(), 60, 1 )},
+                { LootItem.shield, new TableEntry(LootItem.shield.ToString(), 20, 1 )},
+                { LootItem.weapon, new TableEntry(LootItem.weapon.ToString(), 60, 1 )},
+                { LootItem.linenClothes, new TableEntry(LootItem.linenClothes.ToString(), 10, 1 )},
+                { LootItem.plateMail, new TableEntry(LootItem.plateMail.ToString(), 20, 1 )},
+                { LootItem.heavyWeapon, new TableEntry(LootItem.heavyWeapon.ToString(), 20, 1 )},
+                { LootItem.gold, new TableEntry(LootItem.gold.ToString(), 50, 10 )},
+                { LootItem.crossbow, new TableEntry(LootItem.crossbow.ToString(), 30, 1 )},
+                { LootItem.arrows, new TableEntry(LootItem.arrows.ToString(), 30, 10 )},
             };
 
             LootTables.Add(RaiderType.Brawler, new LootTable(RaiderType.Brawler, brawlerLoot));

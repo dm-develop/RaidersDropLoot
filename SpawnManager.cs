@@ -24,7 +24,9 @@ namespace dm.ffmods.raidersdroploot
             { LootItem.arrows, typeof(ArrowResource) },
             { LootItem.smokedMeat , typeof(SmokedMeatResource) },
             { LootItem.bread , typeof(BreadResource) },
-            { LootItem.gold, typeof(GoldIngotResource) }
+            { LootItem.gold, typeof(GoldIngotResource) },
+            { LootItem.shoes, typeof(ShoesResource) },
+            { LootItem.linenClothes, typeof(LinenClothesResource) },
         };
 
         public Dictionary<LootItem, SpawnPackage> SpawnPackages = new Dictionary<LootItem, SpawnPackage>();

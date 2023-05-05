@@ -24,7 +24,7 @@ namespace dm.ffmods.raidersdroploot
         private bool setupDone4 = false;
         private SpawnManager spawnManager;
         private float timeSinceLastCheckInSeconds = 0f;
-        private bool verbose = true;
+        private bool verbose = false;
 
         #endregion Fields
 

@@ -20,7 +20,9 @@ namespace dm.ffmods.raidersdroploot
         arrows,
         smokedMeat,
         bread,
-        gold
+        gold,
+        shoes,
+        linenClothes,
     }
 
     public class PrefabManager
@@ -41,7 +43,9 @@ namespace dm.ffmods.raidersdroploot
             { LootItem.arrows, "Ranged_Bow01A_Ammo_Resource"},
             { LootItem.smokedMeat , "Resource_Villager_SmokedMeat01A"},
             { LootItem.bread , "Resource_Villager_Bread01A"},
-            { LootItem.gold, "Resource_Villager_GoldIngot01A"}
+            { LootItem.gold, "Resource_Villager_GoldIngot01A"},
+            { LootItem.shoes, "Resource_Villager_Shoes01A"},
+            { LootItem.linenClothes, "Resource_Villager_LinenClothes01A"},
         };
 
         public bool ArePrefabsMissing = true;
