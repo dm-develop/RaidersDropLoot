@@ -79,7 +79,7 @@ namespace dm.ffmods.raidersdroploot
                         itemsMissing.Remove(item.Key);
                         if (Melon<RaidersDropLootMelon>.Instance.Verbose)
                         {
-                            Melon<RaidersDropLootMelon>.Logger.Msg($"found prefab for '{item.Key}!'");
+                            Melon<RaidersDropLootMelon>.Logger.Msg($"found prefab for '{item.Key}'!");
                         }
                     }
                 }

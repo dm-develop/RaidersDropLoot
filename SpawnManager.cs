@@ -140,7 +140,7 @@ namespace dm.ffmods.raidersdroploot
             InitInstance(package, instance, amount);
             if (Melon<RaidersDropLootMelon>.Instance.Verbose)
             {
-                Melon<RaidersDropLootMelon>.Logger.Msg($"Spawned loot item of '{itemType}' at {position}.");
+                Melon<RaidersDropLootMelon>.Logger.Msg($"spawned loot item of type '{itemType}' at {position}.");
             }
         }
 

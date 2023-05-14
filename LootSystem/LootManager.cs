@@ -90,14 +90,14 @@ namespace dm.ffmods.raidersdroploot
                 {
                     int roll = Random.Range(1, 100 + 1);
 
-                    if (Melon<RaidersDropLootMelon>.Instance.Verbose)
-                    {
-                        Melon<RaidersDropLootMelon>.Logger.Msg($"rolled {roll} for item '{item.Key}' " +
-                            $"with droprate {item.Value.DropRateInPercent}%");
-                    }
                     if (roll <= item.Value.DropRateInPercent)
                     {
                         toSpawn.Add(item.Key);
+                        if (Melon<RaidersDropLootMelon>.Instance.Verbose)
+                        {
+                            Melon<RaidersDropLootMelon>.Logger.Msg($"Rolled {roll} for item '{item.Key}' " +
+                                $"with droprate {item.Value.DropRateInPercent}%, adding to loot bucket ...");
+                        }
                     }
                 }
             }
