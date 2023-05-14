@@ -95,7 +95,7 @@ namespace dm.ffmods.raidersdroploot
                         toSpawn.Add(item.Key);
                         if (Melon<RaidersDropLootMelon>.Instance.Verbose)
                         {
-                            Melon<RaidersDropLootMelon>.Logger.Msg($"Rolled {roll} for item '{item.Key}' " +
+                            Melon<RaidersDropLootMelon>.Logger.Msg($"rolled {roll} for item '{item.Key}' " +
                                 $"with droprate {item.Value.DropRateInPercent}%, adding to loot bucket ...");
                         }
                     }
