@@ -4,8 +4,33 @@ using Random = UnityEngine.Random;
 
 namespace dm.ffmods.raidersdroploot
 {
+    public enum LootItem
+    {
+        crudeWeapon,
+        weapon,
+        heavyWeapon,
+        leatherCoat,
+        hauberk,
+        plateMail,
+        shield,
+        bow,
+        crossbow,
+        arrows,
+        smokedMeat,
+        bread,
+        gold,
+        shoes,
+        linenClothes,
+    }
+
     public enum RaiderType
-    { Brawler, Thief, Warrior, Elite, Champion }
+    {
+        Brawler,
+        Thief,
+        Warrior,
+        Elite,
+        Champion
+    }
 
     public class LootManager
     {
@@ -19,6 +44,8 @@ namespace dm.ffmods.raidersdroploot
             { "RaiderUnit_Elite", RaiderType.Elite },
             { "RaiderUnit_Champion", RaiderType.Champion}
         };
+
+        private uint currentRaidSize = 0;
 
         #endregion Fields
 
@@ -63,7 +90,7 @@ namespace dm.ffmods.raidersdroploot
             {
                 return false;
             }
-            if (!LootTables[type].DropTable.Any())
+            if (!LootTables[type].Drops.Any())
             {
                 return false;
             }
@@ -84,9 +111,9 @@ namespace dm.ffmods.raidersdroploot
 
             LootTable table = LootTables[type];
 
-            if (table.DropTable.Any())
+            if (table.Drops.Any())
             {
-                foreach (var item in table.DropTable)
+                foreach (var item in table.Drops)
                 {
                     int roll = Random.Range(1, 100 + 1);
 
@@ -107,7 +134,7 @@ namespace dm.ffmods.raidersdroploot
         public void UpdateLootTable(LootTable table)
         {
             var type = table.RaiderType;
-            if (!table.DropTable.Any())
+            if (!table.Drops.Any())
             {
                 if (Melon<RaidersDropLootMelon>.Instance.Verbose)
                 {
@@ -130,6 +157,16 @@ namespace dm.ffmods.raidersdroploot
             }
             Melon<RaidersDropLootMelon>.Logger.Msg($"updating loot entry for '{type}' ...");
             LootTables[type] = table;
+        }
+
+        public void UpdateRaidSize(uint newRaidSize)
+        {
+            if (Melon<RaidersDropLootMelon>.Instance.Verbose)
+            {
+                Melon<RaidersDropLootMelon>.Logger.Warning($" setting new raid size of {newRaidSize}");
+            }
+
+            currentRaidSize = newRaidSize;
         }
 
         #endregion Public Methods

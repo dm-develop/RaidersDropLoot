@@ -26,8 +26,9 @@ namespace dm.ffmods.raidersdroploot
             // __instance gets us the instance of the Raider class
             Raider instance = __instance;
 
-            // get position from instance
-            Vector3 position = instance.pawnInstance.transform.position;
+            // get raid group size
+            int size = instance.raiderGroup.groupSize;
+            Melon<RaidersDropLootMelon>.Logger.Warning($"groupsize was: {size}");
 
             // get LootRoller instance
             var lootManager = Melon<RaidersDropLootMelon>.Instance.LootManager;
@@ -50,14 +51,12 @@ namespace dm.ffmods.raidersdroploot
             }
 
             // spawn it
-            var spawner = Melon<RaidersDropLootMelon>.Instance.SpawnManager;
             if (loot.Any())
             {
                 foreach (var item in loot)
                 {
-                    var amount = lootManager.LootTables[type].DropTable[item].AmountInBundle;
+                    var amount = lootManager.LootTables[type].Drops[item].AmountInBundle;
                     SpawnManager.AddBundleToRaider(item, amount, __instance);
-                    // spawner.SpawnLootItem(item, position, amount);
                 }
             }
 

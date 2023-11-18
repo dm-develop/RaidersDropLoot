@@ -7,14 +7,14 @@
         public LootTable(RaiderType raiderType, Dictionary<LootItem, TableEntry> drops)
         {
             RaiderType = raiderType;
-            DropTable = drops;
+            Drops = drops;
         }
 
         #endregion Public Constructors
 
         #region Properties
 
-        public Dictionary<LootItem, TableEntry> DropTable { get; set; }
+        public Dictionary<LootItem, TableEntry> Drops { get; set; }
         public RaiderType RaiderType { get; private set; }
 
         #endregion Properties
@@ -25,13 +25,13 @@
         {
             string str = "";
             str += ($"'{this.RaiderType}': ");
-            if (!DropTable.Any())
+            if (!Drops.Any())
             {
                 str += "[]";
                 return str;
             }
             str += "[";
-            foreach (var item in this.DropTable)
+            foreach (var item in this.Drops)
             {
                 TableEntry entry = item.Value;
                 str += $"('{item.Key}': '{entry.ItemID}', {entry.DropRateInPercent}, {entry.AmountInBundle})";

@@ -43,9 +43,9 @@
 
             var configTable = new List<ConfigTableRow>();
 
-            if (table.DropTable.Any())
+            if (table.Drops.Any())
             {
-                foreach (var item in table.DropTable)
+                foreach (var item in table.Drops)
                 {
                     TableEntry entry = item.Value;
                     configTable.Add(ConfigTableRow.CreateFromTableEntry(entry));

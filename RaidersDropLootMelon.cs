@@ -10,20 +10,19 @@ namespace dm.ffmods.raidersdroploot
 
         public const string ConfigPath = "UserData/RaidersDropLootConfig.cfg";
         public static MelonPreferences_Category LootPrefs;
-        private float checkIntervalInSeconds = 3f;
+        private uint checkIntervalInSeconds = 3;
         private ConfigManager configManager;
         private bool frontierHasLoaded = false;
         private GameManager gameManager;
         private MelonPreferences_Entry<bool> isVerboseEntry;
         private LootManager lootManager;
-        private PrefabManager prefabManager;
+        private uint lootUpdateIntervalInSeconds = 10;
+        private DynamicLootScaler scaler;
         private bool setupDone0 = false;
         private bool setupDone1 = false;
         private bool setupDone2 = false;
-        private bool setupDone3 = false;
-        private bool setupDone4 = false;
-        private SpawnManager spawnManager;
         private float timeSinceLastCheckInSeconds = 0f;
+        private float timeSinceLastLootUpdateInSeconds = 0f;
         private bool verbose = false;
 
         #endregion Fields
@@ -33,7 +32,7 @@ namespace dm.ffmods.raidersdroploot
         public GameManager GameManager { get => gameManager; }
         public bool HasInitalised { get; private set; }
         public LootManager LootManager { get => lootManager; }
-        public SpawnManager SpawnManager { get => spawnManager; }
+        public DynamicLootScaler Scaler { get => scaler; }
         public bool Verbose { get => verbose; set => verbose = value; }
 
         #endregion Properties
@@ -48,7 +47,6 @@ namespace dm.ffmods.raidersdroploot
         public override void OnInitializeMelon()
         {
             LoggerInstance.Msg("Setting up RaidersDropLoot mod ...");
-            prefabManager = new PrefabManager();
             lootManager = new LootManager();
             configManager = new ConfigManager();
 
@@ -76,7 +74,7 @@ namespace dm.ffmods.raidersdroploot
             // print progress
             if (!setupDone0)
             {
-                LoggerInstance.Msg("[0/4] Waiting for Frontier scene to load ...");
+                LoggerInstance.Msg("[0/2] Waiting for Frontier scene to load ...");
                 setupDone0 = true;
             }
 
@@ -89,7 +87,7 @@ namespace dm.ffmods.raidersdroploot
             // print progress
             if (!setupDone1)
             {
-                LoggerInstance.Msg("[1/4] Fetching GameManager  ...");
+                LoggerInstance.Msg("[1/2] Fetching GameManager  ...");
                 setupDone1 = true;
             }
 
@@ -103,47 +101,17 @@ namespace dm.ffmods.raidersdroploot
                 timeSinceLastCheckInSeconds = 0;
                 return;
             }
-            // find GaneManager
+            // find GameManager
             gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-            spawnManager = new SpawnManager(gameManager);
+
+            // create loot scaler
+            scaler = new DynamicLootScaler(gameManager);
 
             // print progress
             if (!setupDone2)
             {
-                LoggerInstance.Msg("[2/4] Fetching loot item prefabs ...");
+                LoggerInstance.Msg("[2/2] Reading config file ...");
                 setupDone2 = true;
-            }
-
-            // fetch prefabs
-            if (!prefabManager.TryFindItemPrefabs())
-            {
-                if (verbose)
-                {
-                    LoggerInstance.Warning($"could not find all item prefabs, will try again in {checkIntervalInSeconds} seconds ...");
-                }
-
-                timeSinceLastCheckInSeconds = 0;
-                return;
-            }
-
-            // print progress
-            if (!setupDone3)
-            {
-                LoggerInstance.Msg("[3/4] Prepping prefabs for use ...");
-                setupDone3 = true;
-            }
-
-            // prep loot for spawning
-            if (!prefabManager.ArePrefabsMissing)
-            {
-                spawnManager.PrepAllPackages(prefabManager.ItemPrefabs);
-            }
-
-            // print progress
-            if (!setupDone4)
-            {
-                LoggerInstance.Msg("[4/4] Reading config file ...");
-                setupDone4 = true;
             }
 
             // parse config file
@@ -172,6 +140,29 @@ namespace dm.ffmods.raidersdroploot
             if (sceneName == "Frontier")
             {
                 frontierHasLoaded = true;
+            }
+        }
+
+        public override void OnUpdate()
+        {
+            base.OnUpdate();
+
+            if (!HasInitalised)
+            {
+                return;
+            }
+
+            // counter for loot updates
+            timeSinceLastLootUpdateInSeconds += Time.deltaTime;
+
+            if (timeSinceLastLootUpdateInSeconds > lootUpdateIntervalInSeconds)
+            {
+                if (Melon<RaidersDropLootMelon>.Instance.Verbose)
+                {
+                    Melon<RaidersDropLootMelon>.Logger.Msg($"updating loot chances based on player wealth ...");
+                }
+                scaler.CalculateAdjustedLootChances();
+                timeSinceLastCheckInSeconds = 0f;
             }
         }
 
