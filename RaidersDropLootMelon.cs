@@ -30,6 +30,7 @@ namespace dm.ffmods.raidersdroploot
 
         #region Properties
 
+        public GameManager GameManager { get => gameManager; }
         public bool HasInitalised { get; private set; }
         public LootManager LootManager { get => lootManager; }
         public SpawnManager SpawnManager { get => spawnManager; }

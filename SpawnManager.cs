@@ -10,6 +10,25 @@ namespace dm.ffmods.raidersdroploot
     {
         #region Fields
 
+        public static Dictionary<LootItem, Type> LootItemTypes = new Dictionary<LootItem, Type>()
+        {
+            { LootItem.crudeWeapon, typeof(ItemSimpleWeapon) },
+            { LootItem.hauberk, typeof(ItemHauberk) },
+            { LootItem.heavyWeapon , typeof(ItemHeavyWeapon) },
+            { LootItem.leatherCoat , typeof(ItemHideCoat) },
+            { LootItem.plateMail , typeof(ItemPlatemail) },
+            { LootItem.weapon , typeof(ItemWeapon) },
+            { LootItem.shield, typeof(ItemShield) },
+            { LootItem.bow , typeof(ItemBow) },
+            { LootItem.crossbow , typeof(ItemCrossbow) },
+            { LootItem.arrows, typeof(ItemArrow) },
+            { LootItem.smokedMeat , typeof(ItemSmokedMeat) },
+            { LootItem.bread , typeof(ItemBread) },
+            { LootItem.gold, typeof(ItemGoldIngot) },
+            { LootItem.shoes, typeof(ItemShoes) },
+            { LootItem.linenClothes, typeof(ItemLinenClothes) },
+        };
+
         public static Dictionary<LootItem, Type> LootResourceTypes = new Dictionary<LootItem, Type>()
         {
             { LootItem.crudeWeapon, typeof(SimpleWeaponResource) },
@@ -44,6 +63,40 @@ namespace dm.ffmods.raidersdroploot
         #endregion Public Constructors
 
         #region Public Methods
+
+        public static void AddBundleToRaider(LootItem itemType, uint amount, Raider raider)
+        {
+            // check if tyoe is valid
+            if (!LootItemTypes.ContainsKey(itemType))
+            {
+                Melon<RaidersDropLootMelon>.Logger.Error($"cannot find Item Type for '{itemType}'!");
+                return;
+            }
+
+            // check if type has matching constructor
+            Type type = LootItemTypes[itemType];
+            ConstructorInfo ctor = type.GetConstructor(Type.EmptyTypes);
+            if (ctor == null)
+            {
+                Melon<RaidersDropLootMelon>.Logger.Error($"cannot find constructor for '{itemType}'!");
+                return;
+            }
+
+            // create instance
+            Item item = (Item)ctor.Invoke(null);
+            if (item == null)
+            {
+                Melon<RaidersDropLootMelon>.Logger.Error($"cannot create instance of '{itemType}' for bundle!");
+                return;
+            }
+
+            raider.AddStolenItem(new ItemBundle(item, amount, 100U), null);
+
+            if (Melon<RaidersDropLootMelon>.Instance.Verbose)
+            {
+                Melon<RaidersDropLootMelon>.Logger.Msg($"added bundle of {amount} units of {itemType} to raider.");
+            }
+        }
 
         public void PrepAllPackages(Dictionary<LootItem, GameObject> ItemPrefabs)
         {
@@ -136,6 +189,10 @@ namespace dm.ffmods.raidersdroploot
             // set its positions to where raider died
             instance.transform.localPosition = Vector3.zero;
             instance.transform.position = position;
+            // no idea if we need the stuff below
+            instance.priority = Resource.Priority.Elevated;
+            instance.addedOnMonthCallback = true;
+            instance.lifetimeModifierPercent = 100;
 
             InitInstance(package, instance, amount);
             if (Melon<RaidersDropLootMelon>.Instance.Verbose)
