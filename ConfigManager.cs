@@ -10,6 +10,7 @@ namespace dm.ffmods.raidersdroploot
         private bool isInitialised = false;
         private LootManager lootManager;
         private MelonPreferences_Category lootPrefs;
+        private LootSettingsManager lootSettingsManager;
 
         #endregion Fields
 
@@ -21,10 +22,11 @@ namespace dm.ffmods.raidersdroploot
 
         #region Public Methods
 
-        public void InitConfig(LootManager lootManager, MelonPreferences_Category lootPrefs)
+        public void InitConfig(LootManager lootManager, LootSettingsManager settingsManager)
         {
+            this.lootSettingsManager = settingsManager;
             this.lootManager = lootManager;
-            this.lootPrefs = lootPrefs;
+            this.lootPrefs = LootSettingsManager.RaidersDropLootPrefs;
 
             CreateEntries();
 
@@ -69,7 +71,7 @@ namespace dm.ffmods.raidersdroploot
 
         private void UpdateTablesFromPrefs()
         {
-            var toIgnore = Melon<RaidersDropLootMelon>.Instance.GetPrefEntriesToIgnore();
+            var toIgnore = lootSettingsManager.PrefEntriesToIgnore;
             var entries = lootPrefs.Entries.Except(toIgnore);
             // extract table from each entry
             foreach (var entry in entries)

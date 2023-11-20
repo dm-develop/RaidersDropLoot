@@ -1,5 +1,6 @@
 ﻿using Il2Cpp;
 using MelonLoader;
+using System.Diagnostics;
 using System.Reflection;
 using static Il2Cpp.ResourceManager;
 
@@ -9,28 +10,25 @@ namespace dm.ffmods.raidersdroploot
     {
         #region Fields
 
-        public Dictionary<LootItem, float> lootMultipliers = new Dictionary<LootItem, float>();
-        public float LostBonus = 0.2f;
-        public uint LostThreshold = 10;
-        public uint ProducedThreshold = 10;
-        public float ProductionPenality = 0.2f;
-        public float UnusedPenalty = 0.5f;
-        public uint UnusedThreshold = 10;
+        public Dictionary<LootItem, float> LootMultipliers = new Dictionary<LootItem, float>();
 
         private GameManager gameManager;
+        private LootSettingsManager lootSettingsManager;
+        private Stopwatch timer = new Stopwatch();
 
         #endregion Fields
 
         #region Public Constructors
 
-        public DynamicLootScaler(GameManager gameManager)
+        public DynamicLootScaler(GameManager gameManager, LootSettingsManager lootSettingsManager)
         {
             this.gameManager = gameManager;
+            this.lootSettingsManager = lootSettingsManager;
 
             // init factor with 1
             foreach (LootItem item in Enum.GetValues(typeof(LootItem)))
             {
-                lootMultipliers.Add(item, 1);
+                LootMultipliers.Add(item, 1);
             }
         }
 
@@ -40,10 +38,17 @@ namespace dm.ffmods.raidersdroploot
 
         public void CalculateAdjustedLootChances()
         {
+            timer.Start();
             foreach (LootItem item in Enum.GetValues(typeof(LootItem)))
             {
                 UpdateFactorForItem(item);
             }
+            timer.Stop();
+            if (Melon<RaidersDropLootMelon>.Instance.Verbose)
+            {
+                Melon<RaidersDropLootMelon>.Logger.Msg($"updating drop chances took {timer.Elapsed} seconds.");
+            }
+            timer.Reset();
         }
 
         #endregion Public Methods
@@ -53,36 +58,44 @@ namespace dm.ffmods.raidersdroploot
         private float UpdateFactorForItem(LootItem item)
         {
             ResourceManager resManager = gameManager.resourceManager;
+            var test = resManager.ironOreItemInfo.minQuota;
 
-            string propName = $"{item}ItemInfo";
-            Melon<RaidersDropLootMelon>.Logger.Msg($"working on prop: {propName}");
+            string propName = ItemManager.GetItemInfoName(item);
 
             // Get the property info using reflection
             PropertyInfo propInfo = resManager.GetType().GetProperty(propName);
-            Melon<RaidersDropLootMelon>.Logger.Msg($"prop name: {propInfo.Name}");
+            if (propInfo == null)
+            {
+                Melon<RaidersDropLootMelon>.Logger.Warning($"could not find PropertyInfo for: {propName}");
+                return 1;
+            }
 
             // Get the value of the property using reflection
             ItemInfo info = (ItemInfo)propInfo.GetValue(resManager);
-            Melon<RaidersDropLootMelon>.Logger.Msg($"info item name: {info.item.name}");
+            if (info == null)
+            {
+                Melon<RaidersDropLootMelon>.Logger.Warning($"could not find ItemInfo for: {propName}");
+                return 1;
+            }
 
             var numProduced = info.numProducedThisYear;
             var numLost = info.numLostThisYear;
             var numUnused = info.unusedCount;
 
             float factor = 1;
-            if (numProduced >= ProducedThreshold)
+            if (numProduced >= lootSettingsManager.ProducedThreshold)
             {
-                factor -= ProductionPenality;
+                factor += lootSettingsManager.ProducedPenalty;
             }
 
-            if (numLost >= LostThreshold)
+            if (numLost >= lootSettingsManager.LostThreshold)
             {
-                factor += LostBonus;
+                factor += lootSettingsManager.LostBonus;
             }
 
-            if (numUnused >= UnusedThreshold)
+            if (numUnused >= lootSettingsManager.UnusedThreshold)
             {
-                factor -= UnusedPenalty;
+                factor += lootSettingsManager.UnusedPenalty;
             }
 
             if (factor < 0f) { factor = 0f; }

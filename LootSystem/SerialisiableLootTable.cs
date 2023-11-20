@@ -5,8 +5,9 @@
         #region Fields
 
         public int AmountInBundle = 1;
-        public int DropRateInPercent = 0;
+        public int BaseDropChanceInPercent = 0;
         public string ID = "undefined";
+        public bool IsDynamic = false;
 
         #endregion Fields
 
@@ -15,9 +16,10 @@
         public static ConfigTableRow CreateFromTableEntry(TableEntry entry)
         {
             var row = new ConfigTableRow();
-            row.DropRateInPercent = (int)entry.DropRateInPercent;
+            row.BaseDropChanceInPercent = (int)entry.BaseDropChanceInPercent;
             row.ID = entry.ItemID;
             row.AmountInBundle = (int)entry.AmountInBundle;
+            row.IsDynamic = (bool)entry.IsDynamic;
             return row;
         }
 
@@ -65,7 +67,7 @@
             {
                 foreach (var row in Table)
                 {
-                    var entry = new TableEntry(row.ID, (uint)row.DropRateInPercent, (uint)row.AmountInBundle);
+                    var entry = new TableEntry(row.ID, (uint)row.BaseDropChanceInPercent, (uint)row.AmountInBundle, (bool)row.IsDynamic);
                     drops.Add(Enum.Parse<LootItem>(row.ID), entry);
                 }
             }
@@ -87,7 +89,7 @@
             str += "[";
             foreach (var row in this.Table)
             {
-                str += $"({row.ID}: {row.DropRateInPercent}, {row.AmountInBundle})";
+                str += $"({row.ID}: {row.BaseDropChanceInPercent}, {row.AmountInBundle}, {row.IsDynamic})";
             }
             str += "]";
             return str;

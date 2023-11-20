@@ -4,34 +4,6 @@ using Random = UnityEngine.Random;
 
 namespace dm.ffmods.raidersdroploot
 {
-    public enum LootItem
-    {
-        crudeWeapon,
-        weapon,
-        heavyWeapon,
-        leatherCoat,
-        hauberk,
-        plateMail,
-        shield,
-        bow,
-        crossbow,
-        arrows,
-        smokedMeat,
-        bread,
-        gold,
-        shoes,
-        linenClothes,
-    }
-
-    public enum RaiderType
-    {
-        Brawler,
-        Thief,
-        Warrior,
-        Elite,
-        Champion
-    }
-
     public class LootManager
     {
         #region Fields
@@ -45,14 +17,15 @@ namespace dm.ffmods.raidersdroploot
             { "RaiderUnit_Champion", RaiderType.Champion}
         };
 
-        private uint currentRaidSize = 0;
+        private DynamicLootScaler scaler;
 
         #endregion Fields
 
         #region Public Constructors
 
-        public LootManager()
+        public LootManager(DynamicLootScaler scaler)
         {
+            this.scaler = scaler;
             LootTables = new Dictionary<RaiderType, LootTable>();
             CreateDefaultLootTables();
         }
@@ -117,13 +90,24 @@ namespace dm.ffmods.raidersdroploot
                 {
                     int roll = Random.Range(1, 100 + 1);
 
-                    if (roll <= item.Value.DropRateInPercent)
+                    uint droprate = item.Value.BaseDropChanceInPercent;
+                    if (item.Value.IsDynamic)
+                    {
+                        float multiplier = scaler.LootMultipliers[item.Key];
+                        droprate = (uint)((float)droprate * multiplier);
+                        if (Melon<RaidersDropLootMelon>.Instance.Verbose)
+                        {
+                            Melon<RaidersDropLootMelon>.Logger.Msg($"using adjusted droprate for {item}, current droprate is {droprate}");
+                        }
+                    }
+
+                    if (roll <= droprate)
                     {
                         toSpawn.Add(item.Key);
                         if (Melon<RaidersDropLootMelon>.Instance.Verbose)
                         {
                             Melon<RaidersDropLootMelon>.Logger.Msg($"rolled {roll} for item '{item.Key}' " +
-                                $"with droprate {item.Value.DropRateInPercent}%, adding to loot bucket ...");
+                                $"with droprate {droprate}%, adding to loot bucket ...");
                         }
                     }
                 }
@@ -159,78 +143,17 @@ namespace dm.ffmods.raidersdroploot
             LootTables[type] = table;
         }
 
-        public void UpdateRaidSize(uint newRaidSize)
-        {
-            if (Melon<RaidersDropLootMelon>.Instance.Verbose)
-            {
-                Melon<RaidersDropLootMelon>.Logger.Warning($" setting new raid size of {newRaidSize}");
-            }
-
-            currentRaidSize = newRaidSize;
-        }
-
         #endregion Public Methods
 
         #region Private Methods
 
         private void CreateDefaultLootTables()
         {
-            Dictionary<LootItem, TableEntry> brawlerLoot = new Dictionary<LootItem, TableEntry>()
+            foreach (RaiderType raider in Enum.GetValues(typeof(RaiderType)))
             {
-                { LootItem.crudeWeapon, new TableEntry(LootItem.crudeWeapon.ToString(), 70, 1 )},
-                { LootItem.shield, new TableEntry(LootItem.shield.ToString(), 5, 1 )},
-                { LootItem.smokedMeat, new TableEntry(LootItem.smokedMeat.ToString(), 5, 1 )},
-                { LootItem.leatherCoat, new TableEntry(LootItem.leatherCoat.ToString(), 40, 1 )},
-                { LootItem.linenClothes, new TableEntry(LootItem.linenClothes.ToString(), 20, 1 )},
-                { LootItem.shoes, new TableEntry(LootItem.shoes.ToString(), 60, 1 )},
-            };
-            Dictionary<LootItem, TableEntry> thiefLoot = new Dictionary<LootItem, TableEntry>()
-            {
-                { LootItem.arrows, new TableEntry(LootItem.arrows.ToString(), 60, 10 )},
-                { LootItem.bow, new TableEntry(LootItem.bow.ToString(), 60, 1 )},
-                { LootItem.gold, new TableEntry(LootItem.gold.ToString(), 50, 10 )},
-                { LootItem.leatherCoat, new TableEntry(LootItem.leatherCoat.ToString(), 40, 1 )},
-                { LootItem.linenClothes, new TableEntry(LootItem.linenClothes.ToString(), 20, 1 )},
-                { LootItem.shoes, new TableEntry(LootItem.shoes.ToString(), 60, 1 )},
-            };
-            Dictionary<LootItem, TableEntry> warriorLoot = new Dictionary<LootItem, TableEntry>()
-            {
-                { LootItem.shoes, new TableEntry(LootItem.shoes.ToString(), 60, 1 )},
-                { LootItem.shield, new TableEntry(LootItem.shield.ToString(), 40, 1 )},
-                { LootItem.weapon, new TableEntry(LootItem.weapon.ToString(), 60, 1 )},
-                { LootItem.linenClothes, new TableEntry(LootItem.linenClothes.ToString(), 20, 1 )},
-                { LootItem.hauberk, new TableEntry(LootItem.hauberk.ToString(), 20, 1 )},
-            };
-            Dictionary<LootItem, TableEntry> eliteLoot = new Dictionary<LootItem, TableEntry>()
-            {
-                { LootItem.shoes, new TableEntry(LootItem.shoes.ToString(), 60, 1 )},
-                { LootItem.shield, new TableEntry(LootItem.shield.ToString(), 20, 1 )},
-                { LootItem.weapon, new TableEntry(LootItem.weapon.ToString(), 60, 1 )},
-                { LootItem.linenClothes, new TableEntry(LootItem.linenClothes.ToString(), 20, 1 )},
-                { LootItem.hauberk, new TableEntry(LootItem.hauberk.ToString(), 20, 1 )},
-                { LootItem.heavyWeapon, new TableEntry(LootItem.heavyWeapon.ToString(), 10, 1 )},
-                { LootItem.gold, new TableEntry(LootItem.gold.ToString(), 50, 10 )},
-                { LootItem.crossbow, new TableEntry(LootItem.crossbow.ToString(), 30, 1 )},
-                { LootItem.arrows, new TableEntry(LootItem.arrows.ToString(), 30, 10 )},
-            };
-            Dictionary<LootItem, TableEntry> championLoot = new Dictionary<LootItem, TableEntry>()
-            {
-                { LootItem.shoes, new TableEntry(LootItem.shoes.ToString(), 60, 1 )},
-                { LootItem.shield, new TableEntry(LootItem.shield.ToString(), 20, 1 )},
-                { LootItem.weapon, new TableEntry(LootItem.weapon.ToString(), 60, 1 )},
-                { LootItem.linenClothes, new TableEntry(LootItem.linenClothes.ToString(), 10, 1 )},
-                { LootItem.plateMail, new TableEntry(LootItem.plateMail.ToString(), 20, 1 )},
-                { LootItem.heavyWeapon, new TableEntry(LootItem.heavyWeapon.ToString(), 20, 1 )},
-                { LootItem.gold, new TableEntry(LootItem.gold.ToString(), 50, 10 )},
-                { LootItem.crossbow, new TableEntry(LootItem.crossbow.ToString(), 30, 1 )},
-                { LootItem.arrows, new TableEntry(LootItem.arrows.ToString(), 30, 10 )},
-            };
-
-            LootTables.Add(RaiderType.Brawler, new LootTable(RaiderType.Brawler, brawlerLoot));
-            LootTables.Add(RaiderType.Thief, new LootTable(RaiderType.Thief, thiefLoot));
-            LootTables.Add(RaiderType.Warrior, new LootTable(RaiderType.Warrior, warriorLoot));
-            LootTables.Add(RaiderType.Elite, new LootTable(RaiderType.Elite, eliteLoot));
-            LootTables.Add(RaiderType.Champion, new LootTable(RaiderType.Champion, championLoot));
+                LootTables.Add(raider, new LootTable(raider, DefaultLootTables.GetFullTable()));
+                Melon<RaidersDropLootMelon>.Logger.Warning($" added FULL loot table for {raider}");
+            }
         }
 
         #endregion Private Methods

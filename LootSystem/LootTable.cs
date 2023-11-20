@@ -34,7 +34,7 @@
             foreach (var item in this.Drops)
             {
                 TableEntry entry = item.Value;
-                str += $"('{item.Key}': '{entry.ItemID}', {entry.DropRateInPercent}, {entry.AmountInBundle})";
+                str += $"('{item.Key}': '{entry.ItemID}', {entry.BaseDropChanceInPercent}, {entry.AmountInBundle})";
             }
             str += "]";
             return str;

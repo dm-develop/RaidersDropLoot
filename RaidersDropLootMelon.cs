@@ -9,21 +9,19 @@ namespace dm.ffmods.raidersdroploot
         #region Fields
 
         public const string ConfigPath = "UserData/RaidersDropLootConfig.cfg";
-        public static MelonPreferences_Category LootPrefs;
         private uint checkIntervalInSeconds = 3;
         private ConfigManager configManager;
         private bool frontierHasLoaded = false;
         private GameManager gameManager;
-        private MelonPreferences_Entry<bool> isVerboseEntry;
         private LootManager lootManager;
-        private uint lootUpdateIntervalInSeconds = 10;
+        private LootSettingsManager lootSettingsManager;
         private DynamicLootScaler scaler;
         private bool setupDone0 = false;
         private bool setupDone1 = false;
         private bool setupDone2 = false;
         private float timeSinceLastCheckInSeconds = 0f;
         private float timeSinceLastLootUpdateInSeconds = 0f;
-        private bool verbose = false;
+        private bool verbose = true;
 
         #endregion Fields
 
@@ -33,29 +31,21 @@ namespace dm.ffmods.raidersdroploot
         public bool HasInitalised { get; private set; }
         public LootManager LootManager { get => lootManager; }
         public DynamicLootScaler Scaler { get => scaler; }
-        public bool Verbose { get => verbose; set => verbose = value; }
+        public bool Verbose { get => verbose; }
 
         #endregion Properties
 
         #region Public Methods
 
-        public List<MelonPreferences_Entry> GetPrefEntriesToIgnore()
-        {
-            return new List<MelonPreferences_Entry> { isVerboseEntry };
-        }
-
         public override void OnInitializeMelon()
         {
             LoggerInstance.Msg("Setting up RaidersDropLoot mod ...");
-            lootManager = new LootManager();
             configManager = new ConfigManager();
+            lootSettingsManager = new LootSettingsManager(ConfigPath);
 
-            LootPrefs = MelonPreferences.CreateCategory("RaidersDropLoot");
-            LootPrefs.SetFilePath(ConfigPath);
-
-            // set debug flag based on config file
-            isVerboseEntry = LootPrefs.CreateEntry<bool>("isVerbose", false);
-            verbose = isVerboseEntry.Value;
+            // set loot settings
+            lootSettingsManager.UpdateLootSettings();
+            verbose = lootSettingsManager.IsVerbose;
         }
 
         public override void OnLateUpdate()
@@ -105,7 +95,8 @@ namespace dm.ffmods.raidersdroploot
             gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
             // create loot scaler
-            scaler = new DynamicLootScaler(gameManager);
+            scaler = new DynamicLootScaler(gameManager, lootSettingsManager);
+            lootManager = new LootManager(scaler);
 
             // print progress
             if (!setupDone2)
@@ -115,7 +106,7 @@ namespace dm.ffmods.raidersdroploot
             }
 
             // parse config file
-            configManager.InitConfig(lootManager, LootPrefs);
+            configManager.InitConfig(lootManager, lootSettingsManager);
 
             if (!configManager.IsInitialised)
             {
@@ -155,14 +146,14 @@ namespace dm.ffmods.raidersdroploot
             // counter for loot updates
             timeSinceLastLootUpdateInSeconds += Time.deltaTime;
 
-            if (timeSinceLastLootUpdateInSeconds > lootUpdateIntervalInSeconds)
+            if (timeSinceLastLootUpdateInSeconds > lootSettingsManager.DropChanceAdjustmentIntervalInSeconds)
             {
                 if (Melon<RaidersDropLootMelon>.Instance.Verbose)
                 {
                     Melon<RaidersDropLootMelon>.Logger.Msg($"updating loot chances based on player wealth ...");
                 }
                 scaler.CalculateAdjustedLootChances();
-                timeSinceLastCheckInSeconds = 0f;
+                timeSinceLastLootUpdateInSeconds = 0f;
             }
         }
 

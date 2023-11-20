@@ -7,17 +7,20 @@
         private readonly string itemID = "unknown";
         private uint amountInBundle = 1;
 
-        private uint dropRateInPercent = 0;
+        private uint baseDropChanceInPercent = 0;
+
+        private bool isDynamic = false;
 
         #endregion Fields
 
         #region Public Constructors
 
-        public TableEntry(string itemID, uint dropRateInPercent, uint amountInBundle)
+        public TableEntry(string itemID, uint dropRateInPercent, uint amountInBundle, bool isDynamic)
         {
             this.itemID = itemID;
             SetDropRate(dropRateInPercent);
             SetAmount(amountInBundle);
+            SetDynamic(isDynamic);
         }
 
         #endregion Public Constructors
@@ -25,7 +28,8 @@
         #region Properties
 
         public uint AmountInBundle { get => amountInBundle; }
-        public uint DropRateInPercent { get => dropRateInPercent; }
+        public uint BaseDropChanceInPercent { get => baseDropChanceInPercent; }
+        public bool IsDynamic { get => isDynamic; }
         public string ItemID { get => itemID; }
 
         #endregion Properties
@@ -47,7 +51,12 @@
             {
                 rateInPercent = 100;
             }
-            dropRateInPercent = rateInPercent;
+            baseDropChanceInPercent = rateInPercent;
+        }
+
+        public void SetDynamic(bool newState)
+        {
+            isDynamic = newState;
         }
 
         #endregion Public Methods

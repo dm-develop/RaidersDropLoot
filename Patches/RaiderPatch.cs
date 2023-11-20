@@ -56,7 +56,7 @@ namespace dm.ffmods.raidersdroploot
                 foreach (var item in loot)
                 {
                     var amount = lootManager.LootTables[type].Drops[item].AmountInBundle;
-                    SpawnManager.AddBundleToRaider(item, amount, __instance);
+                    ItemManager.AddBundleToRaider(item, amount, __instance);
                 }
             }
 
