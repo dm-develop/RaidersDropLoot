@@ -46,7 +46,7 @@ namespace dm.ffmods.raidersdroploot
             timer.Stop();
             if (Melon<RaidersDropLootMelon>.Instance.Verbose)
             {
-                Melon<RaidersDropLootMelon>.Logger.Msg($"updating drop chances took {timer.ElapsedMilliseconds} milliseconds.");
+                Melon<RaidersDropLootMelon>.Logger.Msg($"updating drop rate adjustments took {timer.ElapsedMilliseconds} milliseconds.");
             }
             timer.Reset();
         }
@@ -55,7 +55,7 @@ namespace dm.ffmods.raidersdroploot
 
         #region Private Methods
 
-        private float UpdateFactorForItem(LootItem item)
+        private void UpdateFactorForItem(LootItem item)
         {
             ResourceManager resManager = gameManager.resourceManager;
             var test = resManager.ironOreItemInfo.minQuota;
@@ -67,7 +67,7 @@ namespace dm.ffmods.raidersdroploot
             if (propInfo == null)
             {
                 Melon<RaidersDropLootMelon>.Logger.Warning($"could not find PropertyInfo for: {propName}");
-                return 1;
+                return;
             }
 
             // Get the value of the property using reflection
@@ -75,37 +75,41 @@ namespace dm.ffmods.raidersdroploot
             if (info == null)
             {
                 Melon<RaidersDropLootMelon>.Logger.Warning($"could not find ItemInfo for: {propName}");
-                return 1;
+                return;
             }
 
             var numProduced = info.numProducedThisYear;
             var numLost = info.numLostThisYear;
             var numUnused = info.unusedCount;
 
-            float factor = 1;
+            float factor = 1f;
             if (numProduced >= lootSettingsManager.ProducedThreshold)
             {
-                factor += lootSettingsManager.ProducedPenalty;
+                factor += (float)lootSettingsManager.ProducedPenaltyInPercent / 100;
+                //Melon<RaidersDropLootMelon>.Logger.Warning($"applying production penalty of {lootSettingsManager.ProducedPenaltyInPercent}%. new factor is: {factor}");
             }
 
             if (numLost >= lootSettingsManager.LostThreshold)
             {
-                factor += lootSettingsManager.LostBonus;
+                factor += (float)lootSettingsManager.LostBonusInPercent / 100;
+                //Melon<RaidersDropLootMelon>.Logger.Warning($"applying lost bonus of {lootSettingsManager.LostBonusInPercent}%. new factor is: {factor}");
             }
 
             if (numUnused >= lootSettingsManager.UnusedThreshold)
             {
-                factor += lootSettingsManager.UnusedPenalty;
+                factor += (float)lootSettingsManager.UnusedPenaltyInPercent / 100;
+                //Melon<RaidersDropLootMelon>.Logger.Warning($"applying unused penalty of {lootSettingsManager.UnusedPenaltyInPercent}%. new factor is: {factor}");
             }
 
             if (factor < 0f) { factor = 0f; }
 
+            var oldFactor = LootMultipliers[item];
+            LootMultipliers[item] = factor;
+
             if (Melon<RaidersDropLootMelon>.Instance.Verbose)
             {
-                Melon<RaidersDropLootMelon>.Logger.Msg($"updating loot chance multiplier for {item}, new factor is: {factor}");
+                Melon<RaidersDropLootMelon>.Logger.Msg($"updating drop chance adjustments for '{item}': old factor was {oldFactor}, new factor is {LootMultipliers[item]}");
             }
-
-            return factor;
         }
 
         #endregion Private Methods

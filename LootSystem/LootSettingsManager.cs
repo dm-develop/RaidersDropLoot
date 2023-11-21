@@ -7,11 +7,11 @@ namespace dm.ffmods.raidersdroploot
         #region Fields
 
         public static uint DefaultDropChanceAdjustmentIntervalInSeconds = 180;
-        public static float DefaultLostBonus = 0.3f;
+        public static int DefaultLostBonus = 30;
         public static uint DefaultLostThreshold = 10;
-        public static float DefaultProducedPenality = -0.2f;
+        public static int DefaultProducedPenality = -20;
         public static uint DefaultProducedThreshold = 10;
-        public static float DefaultUnusedPenalty = -0.8f;
+        public static int DefaultUnusedPenalty = -80;
         public static uint DefaultUnusedThreshold = 50;
         public static bool DefaultVerbosity = true;
 
@@ -21,25 +21,25 @@ namespace dm.ffmods.raidersdroploot
         public uint DropChanceAdjustmentIntervalInSeconds = DefaultDropChanceAdjustmentIntervalInSeconds;
 
         public bool IsVerbose = DefaultVerbosity;
-        public float LostBonus = DefaultLostBonus;
+        public int LostBonusInPercent = DefaultLostBonus;
 
         public uint LostThreshold = DefaultLostThreshold;
 
         // list of prefs to ignore
         public List<MelonPreferences_Entry> PrefEntriesToIgnore;
 
-        public float ProducedPenalty = DefaultProducedPenality;
+        public int ProducedPenaltyInPercent = DefaultProducedPenality;
         public uint ProducedThreshold = DefaultProducedThreshold;
-        public float UnusedPenalty = DefaultUnusedPenalty;
+        public int UnusedPenaltyInPercent = DefaultUnusedPenalty;
         public uint UnusedThreshold = DefaultUnusedThreshold;
 
         private MelonPreferences_Entry<bool> isVerboseEntry;
         private MelonPreferences_Entry<uint> lootUpdateIntervalEntry;
-        private MelonPreferences_Entry<float> lostBonusEntry;
+        private MelonPreferences_Entry<int> lostBonusEntry;
         private MelonPreferences_Entry<uint> lostThresholdEntry;
-        private MelonPreferences_Entry<float> producedPenaltyEntry;
+        private MelonPreferences_Entry<int> producedPenaltyEntry;
         private MelonPreferences_Entry<uint> producedThresholdEntry;
-        private MelonPreferences_Entry<float> unusedPenaltyEntry;
+        private MelonPreferences_Entry<int> unusedPenaltyEntry;
         private MelonPreferences_Entry<uint> unusedThresholdEntry;
 
         #endregion Fields
@@ -60,15 +60,15 @@ namespace dm.ffmods.raidersdroploot
             lootUpdateIntervalEntry = prefs.CreateEntry<uint>("dropChanceAdjustmentIntervalInSeconds", DefaultDropChanceAdjustmentIntervalInSeconds);
 
             // set lost items entries
-            lostBonusEntry = prefs.CreateEntry<float>("lostItemsBonus", DefaultLostBonus);
+            lostBonusEntry = prefs.CreateEntry<int>("lostItemsBonusInPercentPoints", DefaultLostBonus);
             lostThresholdEntry = prefs.CreateEntry<uint>("lostItemsThreshold", DefaultLostThreshold);
 
             // set produced items entries
-            producedPenaltyEntry = prefs.CreateEntry<float>("producedItemsPenalty", DefaultProducedPenality);
+            producedPenaltyEntry = prefs.CreateEntry<int>("producedItemsPenaltyInPercentPoints", DefaultProducedPenality);
             producedThresholdEntry = prefs.CreateEntry<uint>("producedItemsThreshold", DefaultProducedThreshold);
 
             // set unused entries
-            unusedPenaltyEntry = prefs.CreateEntry<float>("unusedItemsPenalty", DefaultUnusedPenalty);
+            unusedPenaltyEntry = prefs.CreateEntry<int>("unusedItemsPenaltyInPercentPoints", DefaultUnusedPenalty);
             unusedThresholdEntry = prefs.CreateEntry<uint>("unusedItemsThreshold", DefaultUnusedThreshold);
 
             // add entries to ignore list
@@ -98,15 +98,15 @@ namespace dm.ffmods.raidersdroploot
             DropChanceAdjustmentIntervalInSeconds = lootUpdateIntervalEntry.Value;
 
             // set lost items entries
-            LostBonus = lostBonusEntry.Value;
+            LostBonusInPercent = lostBonusEntry.Value;
             LostThreshold = lostThresholdEntry.Value;
 
             // set produced items entries
-            ProducedPenalty = producedPenaltyEntry.Value;
+            ProducedPenaltyInPercent = producedPenaltyEntry.Value;
             ProducedThreshold = producedThresholdEntry.Value;
 
             // set unused entries
-            UnusedPenalty = unusedPenaltyEntry.Value;
+            UnusedPenaltyInPercent = unusedPenaltyEntry.Value;
             UnusedThreshold = unusedThresholdEntry.Value;
         }
 
