@@ -2,6 +2,7 @@
 {
     public enum RaiderType
     {
+        Archer,
         Brawler,
         Thief,
         Warrior,

@@ -10,11 +10,19 @@ namespace dm.ffmods.raidersdroploot
 
         private static Dictionary<string, RaiderType> unitNames = new Dictionary<string, RaiderType>
         {
+            { "RaiderUnit_Archer", RaiderType.Archer },
             { "RaiderUnit_Brawler", RaiderType.Brawler },
             { "RaiderUnit_Thief", RaiderType.Thief },
             { "RaiderUnit_Warrior", RaiderType.Warrior },
             { "RaiderUnit_Elite", RaiderType.Elite },
-            { "RaiderUnit_Champion", RaiderType.Champion}
+            { "RaiderUnit_Champion", RaiderType.Champion},
+            { "RaiderUnit_RaidCamp_Archer", RaiderType.Archer },
+            { "RaiderUnit_RaidCamp_Brawler", RaiderType.Brawler },
+            { "RaiderUnit_RaidCamp_Warrior", RaiderType.Warrior },
+            { "RaiderUnit_RaidCamp_Elite", RaiderType.Elite },
+            { "RaiderUnit_RaidCamp_Champion", RaiderType.Champion},
+            { "RaiderUnit_RelicBrawler", RaiderType.Brawler },
+            { "RaiderUnit_RelicWarrior", RaiderType.Warrior },
         };
 
         private DynamicLootScaler scaler;
@@ -97,7 +105,7 @@ namespace dm.ffmods.raidersdroploot
                         droprate = (uint)((float)droprate * multiplier);
                         if (Melon<RaidersDropLootMelon>.Instance.Verbose)
                         {
-                            Melon<RaidersDropLootMelon>.Logger.Msg($"using adjusted droprate for {item}, current droprate is {droprate}");
+                            Melon<RaidersDropLootMelon>.Logger.Msg($"using adjusted droprate for '{item.Key}', current droprate is {droprate}%");
                         }
                     }
 
@@ -107,7 +115,7 @@ namespace dm.ffmods.raidersdroploot
                         if (Melon<RaidersDropLootMelon>.Instance.Verbose)
                         {
                             Melon<RaidersDropLootMelon>.Logger.Msg($"rolled {roll} for item '{item.Key}' " +
-                                $"with droprate {droprate}%, adding to loot bucket ...");
+                                $"with droprate {droprate}%, adding to loot bucket of '{type}' ...");
                         }
                     }
                 }
@@ -154,6 +162,7 @@ namespace dm.ffmods.raidersdroploot
             //    LootTables.Add(raider, new LootTable(raider, DefaultLootTables.GetFullTable()));
             //    Melon<RaidersDropLootMelon>.Logger.Warning($" added FULL loot table for {raider}");
             //}
+            LootTables.Add(RaiderType.Archer, new LootTable(RaiderType.Archer, DefaultLootTables.DefaulArcherLoot));
             LootTables.Add(RaiderType.Brawler, new LootTable(RaiderType.Brawler, DefaultLootTables.DefaultBrawlerLoot));
             LootTables.Add(RaiderType.Thief, new LootTable(RaiderType.Thief, DefaultLootTables.DefaultThiefLoot));
             LootTables.Add(RaiderType.Warrior, new LootTable(RaiderType.Warrior, DefaultLootTables.DefaultWarriorLoot));

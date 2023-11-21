@@ -4,6 +4,15 @@
     {
         #region Fields
 
+        public static Dictionary<LootItem, TableEntry> DefaulArcherLoot = new Dictionary<LootItem, TableEntry>()
+            {
+                { LootItem.arrow, new TableEntry(LootItem.arrow.ToString(), 80, 10, true )},
+                { LootItem.bow, new TableEntry(LootItem.bow.ToString(), 80, 1, true )},
+                { LootItem.hideCoat, new TableEntry(LootItem.hideCoat.ToString(), 40, 1, true )},
+                { LootItem.linenClothes, new TableEntry(LootItem.linenClothes.ToString(), 20, 1, true )},
+                { LootItem.shoes, new TableEntry(LootItem.shoes.ToString(), 60, 1, true )},
+            };
+
         public static Dictionary<LootItem, TableEntry> DefaultBrawlerLoot = new Dictionary<LootItem, TableEntry>()
             {
                 { LootItem.shield, new TableEntry(LootItem.shield.ToString(), 5, 1, true)},
@@ -41,9 +50,9 @@
 
         public static Dictionary<LootItem, TableEntry> DefaultThiefLoot = new Dictionary<LootItem, TableEntry>()
             {
-                { LootItem.arrow, new TableEntry(LootItem.arrow.ToString(), 60, 10, true )},
-                { LootItem.bow, new TableEntry(LootItem.bow.ToString(), 60, 1, true )},
-                { LootItem.goldIngot , new TableEntry(LootItem.goldIngot.ToString(), 50, 10, true)},
+                { LootItem.arrow, new TableEntry(LootItem.arrow.ToString(), 40, 10, true )},
+                { LootItem.bow, new TableEntry(LootItem.bow.ToString(), 40, 1, true )},
+                { LootItem.goldIngot , new TableEntry(LootItem.goldIngot.ToString(), 60, 10, true)},
                 { LootItem.hideCoat, new TableEntry(LootItem.hideCoat.ToString(), 40, 1, true )},
                 { LootItem.linenClothes, new TableEntry(LootItem.linenClothes.ToString(), 20, 1, true )},
                 { LootItem.shoes, new TableEntry(LootItem.shoes.ToString(), 60, 1, true )},

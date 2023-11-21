@@ -26,10 +26,6 @@ namespace dm.ffmods.raidersdroploot
             // __instance gets us the instance of the Raider class
             Raider instance = __instance;
 
-            // get raid group size
-            int size = instance.raiderGroup.groupSize;
-            Melon<RaidersDropLootMelon>.Logger.Warning($"groupsize was: {size}");
-
             // get LootRoller instance
             var lootManager = Melon<RaidersDropLootMelon>.Instance.LootManager;
 
