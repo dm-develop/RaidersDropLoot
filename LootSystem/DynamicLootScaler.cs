@@ -38,10 +38,19 @@ namespace dm.ffmods.raidersdroploot
 
         public void CalculateAdjustedLootChances()
         {
+            ResourceManager resManager = gameManager.resourceManager;
+
+            if (resManager == null)
+            {
+                Melon<RaidersDropLootMelon>.Logger.Warning($"could not find Resourcemanager, skipping loot adjustment");
+                return;
+            }
+
             timer.Start();
+
             foreach (LootItem item in Enum.GetValues(typeof(LootItem)))
             {
-                UpdateFactorForItem(item);
+                UpdateFactorForItem(item, resManager);
             }
             timer.Stop();
             if (Melon<RaidersDropLootMelon>.Instance.Verbose)
@@ -55,11 +64,8 @@ namespace dm.ffmods.raidersdroploot
 
         #region Private Methods
 
-        private void UpdateFactorForItem(LootItem item)
+        private void UpdateFactorForItem(LootItem item, ResourceManager resManager)
         {
-            ResourceManager resManager = gameManager.resourceManager;
-            var test = resManager.ironOreItemInfo.minQuota;
-
             string propName = ItemManager.GetItemInfoName(item);
 
             // Get the property info using reflection

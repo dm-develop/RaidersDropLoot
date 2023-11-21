@@ -13,7 +13,7 @@ namespace dm.ffmods.raidersdroploot
         public static uint DefaultProducedThreshold = 10;
         public static int DefaultUnusedPenalty = -80;
         public static uint DefaultUnusedThreshold = 50;
-        public static bool DefaultVerbosity = true;
+        public static bool DefaultVerbosity = false;
 
         // pref category for the mod
         public static MelonPreferences_Category RaidersDropLootPrefs;
