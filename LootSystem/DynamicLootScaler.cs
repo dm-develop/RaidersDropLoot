@@ -46,7 +46,7 @@ namespace dm.ffmods.raidersdroploot
             timer.Stop();
             if (Melon<RaidersDropLootMelon>.Instance.Verbose)
             {
-                Melon<RaidersDropLootMelon>.Logger.Msg($"updating drop chances took {timer.Elapsed} seconds.");
+                Melon<RaidersDropLootMelon>.Logger.Msg($"updating drop chances took {timer.ElapsedMilliseconds} milliseconds.");
             }
             timer.Reset();
         }

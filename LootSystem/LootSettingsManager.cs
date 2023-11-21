@@ -6,7 +6,7 @@ namespace dm.ffmods.raidersdroploot
     {
         #region Fields
 
-        public static uint DefaultDropChanceAdjustmentIntervalInSeconds = 300;
+        public static uint DefaultDropChanceAdjustmentIntervalInSeconds = 180;
         public static float DefaultLostBonus = 0.3f;
         public static uint DefaultLostThreshold = 10;
         public static float DefaultProducedPenality = -0.2f;

@@ -149,11 +149,16 @@ namespace dm.ffmods.raidersdroploot
 
         private void CreateDefaultLootTables()
         {
-            foreach (RaiderType raider in Enum.GetValues(typeof(RaiderType)))
-            {
-                LootTables.Add(raider, new LootTable(raider, DefaultLootTables.GetFullTable()));
-                Melon<RaidersDropLootMelon>.Logger.Warning($" added FULL loot table for {raider}");
-            }
+            //foreach (RaiderType raider in Enum.GetValues(typeof(RaiderType)))
+            //{
+            //    LootTables.Add(raider, new LootTable(raider, DefaultLootTables.GetFullTable()));
+            //    Melon<RaidersDropLootMelon>.Logger.Warning($" added FULL loot table for {raider}");
+            //}
+            LootTables.Add(RaiderType.Brawler, new LootTable(RaiderType.Brawler, DefaultLootTables.DefaultBrawlerLoot));
+            LootTables.Add(RaiderType.Thief, new LootTable(RaiderType.Thief, DefaultLootTables.DefaultThiefLoot));
+            LootTables.Add(RaiderType.Warrior, new LootTable(RaiderType.Warrior, DefaultLootTables.DefaultWarriorLoot));
+            LootTables.Add(RaiderType.Elite, new LootTable(RaiderType.Elite, DefaultLootTables.DefaultEliteLoot));
+            LootTables.Add(RaiderType.Champion, new LootTable(RaiderType.Champion, DefaultLootTables.DefaultChampionLoot));
         }
 
         #endregion Private Methods
