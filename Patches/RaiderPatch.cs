@@ -23,6 +23,15 @@ namespace dm.ffmods.raidersdroploot
                 return true;
             }
 
+            if (damageCauser.TryGetComponent<AggressiveAnimal>(out _))
+            {
+                if (Melon<RaidersDropLootMelon>.Instance.Verbose)
+                {
+                    Melon<RaidersDropLootMelon>.Logger.Warning($"raider was killed by animal, skipping loot roll ...");
+                }
+                return true;
+            }
+
             // __instance gets us the instance of the Raider class
             Raider instance = __instance;
 
