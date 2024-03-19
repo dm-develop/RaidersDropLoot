@@ -16,11 +16,14 @@ namespace dm.ffmods.raidersdroploot
             { "RaiderUnit_Warrior", RaiderType.Warrior },
             { "RaiderUnit_Elite", RaiderType.Elite },
             { "RaiderUnit_Champion", RaiderType.Champion},
+            { "RaiderUnit_Horseman", RaiderType.Horseman},
             { "RaiderUnit_RaidCamp_Archer", RaiderType.Archer },
+            { "RaiderUnit_RaidCamp_Arbalest", RaiderType.Arbalest },
             { "RaiderUnit_RaidCamp_Brawler", RaiderType.Brawler },
             { "RaiderUnit_RaidCamp_Warrior", RaiderType.Warrior },
             { "RaiderUnit_RaidCamp_Elite", RaiderType.Elite },
             { "RaiderUnit_RaidCamp_Champion", RaiderType.Champion},
+            { "RaiderUnit_RaidCamp_Horseman", RaiderType.Horseman},
             { "RaiderUnit_RelicBrawler", RaiderType.Brawler },
             { "RaiderUnit_RelicWarrior", RaiderType.Warrior },
         };
@@ -163,9 +166,11 @@ namespace dm.ffmods.raidersdroploot
             //    Melon<RaidersDropLootMelon>.Logger.Warning($" added FULL loot table for {raider}");
             //}
             LootTables.Add(RaiderType.Archer, new LootTable(RaiderType.Archer, DefaultLootTables.DefaulArcherLoot));
+            LootTables.Add(RaiderType.Arbalest, new LootTable(RaiderType.Arbalest, DefaultLootTables.DefaulArbalestLoot));
             LootTables.Add(RaiderType.Brawler, new LootTable(RaiderType.Brawler, DefaultLootTables.DefaultBrawlerLoot));
             LootTables.Add(RaiderType.Thief, new LootTable(RaiderType.Thief, DefaultLootTables.DefaultThiefLoot));
             LootTables.Add(RaiderType.Warrior, new LootTable(RaiderType.Warrior, DefaultLootTables.DefaultWarriorLoot));
+            LootTables.Add(RaiderType.Horseman, new LootTable(RaiderType.Horseman, DefaultLootTables.DefaultHorsemanLoot));
             LootTables.Add(RaiderType.Elite, new LootTable(RaiderType.Elite, DefaultLootTables.DefaultEliteLoot));
             LootTables.Add(RaiderType.Champion, new LootTable(RaiderType.Champion, DefaultLootTables.DefaultChampionLoot));
         }

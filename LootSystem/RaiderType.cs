@@ -3,10 +3,12 @@
     public enum RaiderType
     {
         Archer,
+        Arbalest,
         Brawler,
         Thief,
         Warrior,
         Elite,
-        Champion
+        Champion,
+        Horseman
     }
 }
