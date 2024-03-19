@@ -13,6 +13,7 @@ namespace dm.ffmods.raidersdroploot
         private ConfigManager configManager;
         private bool frontierHasLoaded = false;
         private GameManager gameManager;
+        private bool hasParsedConfig = false;
         private LootManager lootManager;
         private LootSettingsManager lootSettingsManager;
         private DynamicLootScaler scaler;
@@ -81,13 +82,9 @@ namespace dm.ffmods.raidersdroploot
                 setupDone1 = true;
             }
 
-            // only continue if GameManager can been found
-            if ((System.Object)(object)GameObject.Find("GameManager") == (System.Object)null)
+            // only continue if GameManager can be found
+            if (!CanFindGameManager())
             {
-                if (verbose)
-                {
-                    LoggerInstance.Warning($"could not find gameManager instance, will try again in {checkIntervalInSeconds} seconds ...");
-                }
                 timeSinceLastCheckInSeconds = 0;
                 return;
             }
@@ -105,8 +102,12 @@ namespace dm.ffmods.raidersdroploot
                 setupDone2 = true;
             }
 
-            // parse config file
-            configManager.InitConfig(lootManager, lootSettingsManager);
+            if (!hasParsedConfig)
+            {
+                // parse config file
+                configManager.InitConfig(lootManager, lootSettingsManager);
+                hasParsedConfig = true;
+            }
 
             if (!configManager.IsInitialised)
             {
@@ -124,13 +125,18 @@ namespace dm.ffmods.raidersdroploot
 
         public override void OnSceneWasLoaded(int buildIndex, string sceneName)
         {
-            if (verbose)
-            {
-                LoggerInstance.Msg($"Scene {sceneName} with build index {buildIndex} has been loaded!");
-            }
             if (sceneName == "Frontier")
             {
                 frontierHasLoaded = true;
+            }
+        }
+
+        public override void OnSceneWasUnloaded(int buildIndex, string sceneName)
+        {
+            if (sceneName == "Frontier")
+            {
+                Reset();
+                LoggerInstance.Warning($"'Frontier' Scene unloaded, resetting RaidersDropLoot mod ...");
             }
         }
 
@@ -158,5 +164,29 @@ namespace dm.ffmods.raidersdroploot
         }
 
         #endregion Public Methods
+
+        #region Private Methods
+
+        private bool CanFindGameManager()
+        {
+            if ((System.Object)(object)GameObject.Find("GameManager") == (System.Object)null)
+            {
+                if (verbose)
+                {
+                    LoggerInstance.Warning($"could not find gameManager instance, will try again in {checkIntervalInSeconds} seconds ...");
+                }
+                return false;
+            }
+            return true;
+        }
+
+        private void Reset()
+        {
+            HasInitalised = false;
+            setupDone0 = false;
+            setupDone1 = false;
+        }
+
+        #endregion Private Methods
     }
 }

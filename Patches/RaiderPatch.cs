@@ -33,13 +33,13 @@ namespace dm.ffmods.raidersdroploot
             }
 
             // __instance gets us the instance of the Raider class
-            Raider instance = __instance;
+            Raider raider = __instance;
 
             // get LootRoller instance
             var lootManager = Melon<RaidersDropLootMelon>.Instance.LootManager;
 
             // determine loot
-            RaiderType type = LootManager.DetermineRaiderTypeFromUnitName(instance.raiderUnitData.name);
+            RaiderType type = LootManager.DetermineRaiderTypeFromUnitName(raider.raiderUnitData.name);
 
             // check if there is a loot table for this raider type
             if (!lootManager.IsLootable(type))
@@ -47,7 +47,7 @@ namespace dm.ffmods.raidersdroploot
                 return true;
             }
 
-            // get loor for raider typer
+            // get loot for raider type
             var loot = lootManager.RollLoot(type);
             // check if there really is loot
             if (!loot.Any())
@@ -56,13 +56,10 @@ namespace dm.ffmods.raidersdroploot
             }
 
             // spawn it
-            if (loot.Any())
+            foreach (var item in loot)
             {
-                foreach (var item in loot)
-                {
-                    var amount = lootManager.LootTables[type].Drops[item].AmountInBundle;
-                    ItemManager.AddBundleToRaider(item, amount, __instance);
-                }
+                var amount = lootManager.LootTables[type].Drops[item].AmountInBundle;
+                ItemManager.AddBundleToRaider(item, amount, raider);
             }
 
             // we want original OnDeath to run, so we set return value to true here for Harmony
