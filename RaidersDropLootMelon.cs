@@ -22,7 +22,8 @@ namespace dm.ffmods.raidersdroploot
         private bool setupDone2 = false;
         private float timeSinceLastCheckInSeconds = 0f;
         private float timeSinceLastLootUpdateInSeconds = 0f;
-        private bool verbose = true;
+        private bool useFullTableAsDefault = false;
+        private bool verbose = false;
 
         #endregion Fields
 
@@ -32,6 +33,7 @@ namespace dm.ffmods.raidersdroploot
         public bool HasInitalised { get; private set; }
         public LootManager LootManager { get => lootManager; }
         public DynamicLootScaler Scaler { get => scaler; }
+        public bool UseFullTableAsDefault { get => useFullTableAsDefault; }
         public bool Verbose { get => verbose; }
 
         #endregion Properties

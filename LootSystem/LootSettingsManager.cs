@@ -6,33 +6,24 @@ namespace dm.ffmods.raidersdroploot
     {
         #region Fields
 
-        public static uint DefaultDropChanceAdjustmentIntervalInSeconds = 300;
-        public static int DefaultLostBonus = 30;
-        public static uint DefaultLostThreshold = 10;
-        public static int DefaultProducedPenality = -20;
-        public static uint DefaultProducedThreshold = 10;
-        public static int DefaultUnusedPenalty = -80;
-        public static uint DefaultUnusedThreshold = 50;
-        public static bool DefaultVerbosity = false;
-
         // pref category for the mod
-        public static MelonPreferences_Category RaidersDropLootPrefs;
+        public static MelonPreferences_Category LootPrefs;
 
-        public uint DropChanceAdjustmentIntervalInSeconds = DefaultDropChanceAdjustmentIntervalInSeconds;
+        public static MelonPreferences_Category LootScalerPrefs;
+        public static MelonPreferences_Category SetupPrefs;
 
-        public bool IsVerbose = DefaultVerbosity;
-        public int LostBonusInPercent = DefaultLostBonus;
-
-        public uint LostThreshold = DefaultLostThreshold;
+        public uint DropChanceAdjustmentIntervalInSeconds = 300;
+        public bool IsVerbose = false;
+        public int LostBonusInPercent = 30;
+        public uint LostThreshold = 10;
 
         // list of prefs to ignore
         public List<MelonPreferences_Entry> PrefEntriesToIgnore;
 
-        public int ProducedPenaltyInPercent = DefaultProducedPenality;
-        public uint ProducedThreshold = DefaultProducedThreshold;
-        public int UnusedPenaltyInPercent = DefaultUnusedPenalty;
-        public uint UnusedThreshold = DefaultUnusedThreshold;
-
+        public int ProducedPenaltyInPercent = -20;
+        public uint ProducedThreshold = 10;
+        public int UnusedPenaltyInPercent = -80;
+        public uint UnusedThreshold = 50;
         private MelonPreferences_Entry<bool> isVerboseEntry;
         private MelonPreferences_Entry<uint> lootUpdateIntervalEntry;
         private MelonPreferences_Entry<int> lostBonusEntry;
@@ -48,28 +39,31 @@ namespace dm.ffmods.raidersdroploot
 
         public LootSettingsManager(string prefsPath)
         {
-            RaidersDropLootPrefs = MelonPreferences.CreateCategory("RaidersDropLoot");
-            RaidersDropLootPrefs.SetFilePath(prefsPath);
-
-            var prefs = RaidersDropLootPrefs;
+            // set up categories
+            LootScalerPrefs = MelonPreferences.CreateCategory("LootScaling");
+            LootScalerPrefs.SetFilePath(prefsPath);
+            LootPrefs = MelonPreferences.CreateCategory("LootTables");
+            LootPrefs.SetFilePath(prefsPath);
+            SetupPrefs = MelonPreferences.CreateCategory("Setup");
+            SetupPrefs.SetFilePath(prefsPath);
 
             // set verbosity
-            isVerboseEntry = prefs.CreateEntry<bool>("verboseLogging", DefaultVerbosity);
+            isVerboseEntry = SetupPrefs.CreateEntry<bool>("verboseLogging", IsVerbose);
 
             // set loot update interval
-            lootUpdateIntervalEntry = prefs.CreateEntry<uint>("dropChanceAdjustmentIntervalInSeconds", DefaultDropChanceAdjustmentIntervalInSeconds);
+            lootUpdateIntervalEntry = LootScalerPrefs.CreateEntry<uint>("dropChanceAdjustmentIntervalInSeconds", DropChanceAdjustmentIntervalInSeconds);
 
             // set lost items entries
-            lostBonusEntry = prefs.CreateEntry<int>("lostItemsBonusInPercentPoints", DefaultLostBonus);
-            lostThresholdEntry = prefs.CreateEntry<uint>("lostItemsThreshold", DefaultLostThreshold);
+            lostBonusEntry = LootScalerPrefs.CreateEntry<int>("lostItemsBonusInPercentPoints", LostBonusInPercent);
+            lostThresholdEntry = LootScalerPrefs.CreateEntry<uint>("lostItemsThreshold", LostThreshold);
 
             // set produced items entries
-            producedPenaltyEntry = prefs.CreateEntry<int>("producedItemsPenaltyInPercentPoints", DefaultProducedPenality);
-            producedThresholdEntry = prefs.CreateEntry<uint>("producedItemsThreshold", DefaultProducedThreshold);
+            producedPenaltyEntry = LootScalerPrefs.CreateEntry<int>("producedItemsPenaltyInPercentPoints", ProducedPenaltyInPercent);
+            producedThresholdEntry = LootScalerPrefs.CreateEntry<uint>("producedItemsThreshold", ProducedThreshold);
 
             // set unused entries
-            unusedPenaltyEntry = prefs.CreateEntry<int>("unusedItemsPenaltyInPercentPoints", DefaultUnusedPenalty);
-            unusedThresholdEntry = prefs.CreateEntry<uint>("unusedItemsThreshold", DefaultUnusedThreshold);
+            unusedPenaltyEntry = LootScalerPrefs.CreateEntry<int>("unusedItemsPenaltyInPercentPoints", UnusedPenaltyInPercent);
+            unusedThresholdEntry = LootScalerPrefs.CreateEntry<uint>("unusedItemsThreshold", UnusedThreshold);
 
             // add entries to ignore list
             PrefEntriesToIgnore = new List<MelonPreferences_Entry>

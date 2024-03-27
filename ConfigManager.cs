@@ -26,7 +26,7 @@ namespace dm.ffmods.raidersdroploot
         {
             this.lootSettingsManager = settingsManager;
             this.lootManager = lootManager;
-            this.lootPrefs = LootSettingsManager.RaidersDropLootPrefs;
+            this.lootPrefs = LootSettingsManager.LootPrefs;
 
             CreateEntries();
 

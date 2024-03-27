@@ -114,7 +114,10 @@ namespace dm.ffmods.raidersdroploot
 
             if (Melon<RaidersDropLootMelon>.Instance.Verbose)
             {
-                Melon<RaidersDropLootMelon>.Logger.Msg($"updating drop chance adjustments for '{item}': old factor was {oldFactor}, new factor is {LootMultipliers[item]}");
+                Melon<RaidersDropLootMelon>.Logger.Msg($"updating drop chance adjustments for " +
+                    $"'{item}': " +
+                    $"old factor was {String.Format("{0:0.##}", oldFactor)}, " +
+                    $"new factor is {String.Format("{0:0.##}", LootMultipliers[item])}");
             }
         }
 
