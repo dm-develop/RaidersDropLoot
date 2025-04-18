@@ -1,11 +1,10 @@
 ﻿using MelonLoader;
+using System.Collections.Generic;
 
 namespace dm.ffmods.raidersdroploot
 {
     public class ConfigManager
     {
-        #region Fields
-
         #region Fields
 
         private bool isInitialised = false;
@@ -15,19 +14,11 @@ namespace dm.ffmods.raidersdroploot
 
         #endregion Fields
 
-        #endregion Fields
-
-        #region Properties
-
         #region Properties
 
         public bool IsInitialised { get => isInitialised; }
 
         #endregion Properties
-
-        #endregion Properties
-
-        #region Public Methods
 
         #region Public Methods
 
@@ -45,10 +36,6 @@ namespace dm.ffmods.raidersdroploot
         }
 
         #endregion Public Methods
-
-        #endregion Public Methods
-
-        #region Private Methods
 
         #region Private Methods
 
@@ -72,7 +59,7 @@ namespace dm.ffmods.raidersdroploot
 
         private void UpdateTable(LootTable table)
         {
-            if (lootManager.LootTables.Keys.Contains(table.RaiderType))
+            if (lootManager.LootTables.ContainsKey(table.RaiderType))
             {
                 if (Melon<RaidersDropLootMelon>.Instance.Verbose)
                 {
@@ -85,16 +72,33 @@ namespace dm.ffmods.raidersdroploot
         private void UpdateTablesFromPrefs()
         {
             var toIgnore = lootSettingsManager.PrefEntriesToIgnore;
-            var entries = lootPrefs.Entries.Except(toIgnore);
-            // extract table from each entry
+            var entries = new List<MelonPreferences_Entry>();
+
+            // Manually filter out entries that are in the toIgnore list
+            foreach (var entry in lootPrefs.Entries)
+            {
+                bool shouldIgnore = false;
+                foreach (var ignoreEntry in toIgnore)
+                {
+                    if (entry == ignoreEntry)
+                    {
+                        shouldIgnore = true;
+                        break;
+                    }
+                }
+                if (!shouldIgnore)
+                {
+                    entries.Add(entry);
+                }
+            }
+
+            // Extract table from each entry
             foreach (var entry in entries)
             {
                 var table = ((SerialisiableLootTable)entry.BoxedValue).Deserialise();
                 UpdateTable(table);
             }
         }
-
-        #endregion Private Methods
 
         #endregion Private Methods
     }

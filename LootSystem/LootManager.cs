@@ -1,4 +1,5 @@
 ﻿using MelonLoader;
+using System;
 using System.Collections.Generic;
 using Random = UnityEngine.Random;
 
@@ -53,7 +54,7 @@ namespace dm.ffmods.raidersdroploot
 
         public static RaiderType DetermineRaiderTypeFromUnitName(string unitName)
         {
-            foreach (string key in unitNames.Keys.OrderByDescending(s => s.Length))
+            foreach (string key in unitNames.Keys)
             {
                 if (unitName.StartsWith(key))
                 {
@@ -74,7 +75,7 @@ namespace dm.ffmods.raidersdroploot
             {
                 return false;
             }
-            if (!LootTables[type].Drops.Any())
+            if (LootTables[type].Drops.Count == 0)
             {
                 return false;
             }
@@ -95,7 +96,7 @@ namespace dm.ffmods.raidersdroploot
 
             LootTable table = LootTables[type];
 
-            if (table.Drops.Any())
+            if (table.Drops.Count > 0)
             {
                 foreach (var item in table.Drops)
                 {
@@ -129,7 +130,7 @@ namespace dm.ffmods.raidersdroploot
         public void UpdateLootTable(LootTable table)
         {
             var type = table.RaiderType;
-            if (!table.Drops.Any())
+            if (table.Drops.Count == 0)
             {
                 if (Melon<RaidersDropLootMelon>.Instance.Verbose)
                 {
@@ -139,7 +140,7 @@ namespace dm.ffmods.raidersdroploot
                 LootTables.Remove(type);
                 return;
             }
-            if (!LootTables.Keys.Contains(type))
+            if (!LootTables.ContainsKey(type))
             {
                 if (Melon<RaidersDropLootMelon>.Instance.Verbose)
                 {

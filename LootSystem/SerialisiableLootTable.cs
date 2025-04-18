@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace dm.ffmods.raidersdroploot
 {
@@ -47,7 +48,7 @@ namespace dm.ffmods.raidersdroploot
 
             var configTable = new List<ConfigTableRow>();
 
-            if (table.Drops.Any())
+            if (table.Drops.Count >= 0)
             {
                 foreach (var item in table.Drops)
                 {
@@ -61,16 +62,16 @@ namespace dm.ffmods.raidersdroploot
 
         public LootTable Deserialise()
         {
-            var type = Enum.Parse<RaiderType>(RaiderType);
+            var type = (RaiderType)Enum.Parse(typeof(RaiderType), RaiderType);
 
             var drops = new Dictionary<LootItem, TableEntry>();
 
-            if (Table.Any())
+            if (Table.Count >= 0)
             {
                 foreach (var row in Table)
                 {
                     var entry = new TableEntry(row.ID, (uint)row.BaseDropChanceInPercent, (uint)row.AmountInBundle, (bool)row.IsDynamic);
-                    drops.Add(Enum.Parse<LootItem>(row.ID), entry);
+                    drops.Add((LootItem)Enum.Parse(typeof(LootItem), row.ID), entry);
                 }
             }
 
@@ -82,7 +83,7 @@ namespace dm.ffmods.raidersdroploot
             string str = "";
             str += ($"'{this.RaiderType}': ");
 
-            if (!Table.Any())
+            if (Table.Count == 0)
             {
                 str += "[]";
                 return str;

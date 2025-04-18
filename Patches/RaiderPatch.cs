@@ -2,6 +2,7 @@
 using MelonLoader;
 using System.Reflection;
 using UnityEngine;
+using System;
 
 namespace dm.ffmods.raidersdroploot
 {
@@ -73,7 +74,7 @@ namespace dm.ffmods.raidersdroploot
             // get loot for raider type
             var loot = lootManager.RollLoot(type);
             // check if there really is loot
-            if (!loot.Any())
+            if (loot.Count == 0)
             {
                 return true;
             }

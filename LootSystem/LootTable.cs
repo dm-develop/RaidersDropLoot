@@ -27,7 +27,7 @@ namespace dm.ffmods.raidersdroploot
         {
             string str = "";
             str += ($"'{this.RaiderType}': ");
-            if (!Drops.Any())
+            if (Drops.Count == 0)
             {
                 str += "[]";
                 return str;

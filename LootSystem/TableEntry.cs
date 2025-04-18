@@ -4,12 +4,12 @@
     {
         #region Fields
 
-        private readonly string itemID = "unknown";
-        private uint amountInBundle = 1;
+        private readonly string itemID;
+        private uint amountInBundle;
 
-        private uint baseDropChanceInPercent = 0;
+        private uint baseDropChanceInPercent;
 
-        private bool isDynamic = false;
+        private bool isDynamic;
 
         #endregion Fields
 
@@ -18,6 +18,9 @@
         public TableEntry(string itemID, uint dropRateInPercent, uint amountInBundle, bool isDynamic)
         {
             this.itemID = itemID;
+            this.amountInBundle = amountInBundle;
+            this.baseDropChanceInPercent = dropRateInPercent;
+            this.isDynamic = isDynamic;
             SetDropRate(dropRateInPercent);
             SetAmount(amountInBundle);
             SetDynamic(isDynamic);
