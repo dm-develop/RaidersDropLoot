@@ -1,5 +1,4 @@
-﻿using Il2Cpp;
-using MelonLoader;
+﻿using MelonLoader;
 using UnityEngine;
 
 namespace dm.ffmods.raidersdroploot

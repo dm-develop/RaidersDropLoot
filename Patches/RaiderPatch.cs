@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
-using Il2Cpp;
 using MelonLoader;
+using System.Reflection;
 using UnityEngine;
 
 namespace dm.ffmods.raidersdroploot
@@ -38,8 +38,31 @@ namespace dm.ffmods.raidersdroploot
             // get LootRoller instance
             var lootManager = Melon<RaidersDropLootMelon>.Instance.LootManager;
 
-            // determine loot
-            RaiderType type = LootManager.DetermineRaiderTypeFromUnitName(raider.raiderUnitData.name);
+            // determine loot these names likely do not work!
+
+            // Access the protected raiderUnitData using reflection
+            var fieldInfo = typeof(Raider).GetField("raiderUnitData", BindingFlags.NonPublic | BindingFlags.Instance);
+            RaidIncursionUnit raiderUnitData = new RaidIncursionUnit();
+            if (fieldInfo != null)
+            {
+                var nullableRaiderUnitData = fieldInfo.GetValue(__instance) as RaidIncursionUnit;
+                if (nullableRaiderUnitData == null)
+                {
+                    Melon<RaidersDropLootMelon>.Logger.Warning($"could not retrieve raider unit data, no loot will be spawned.");
+                    return true;
+                }
+
+                // Proceed with the non-nullable `raiderUnitData` safely
+                raiderUnitData = nullableRaiderUnitData;
+            }
+            else
+            {
+                Melon<RaidersDropLootMelon>.Logger.Warning($"could not retrieve raider unit data, no loot will be spawned.");
+                return true;
+            }
+
+            // get raider type based on name
+            RaiderType type = LootManager.DetermineRaiderTypeFromUnitName(raiderUnitData.name);
 
             // check if there is a loot table for this raider type
             if (!lootManager.IsLootable(type))

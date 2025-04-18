@@ -1,4 +1,6 @@
-﻿namespace dm.ffmods.raidersdroploot
+﻿using System.Collections.Generic;
+
+namespace dm.ffmods.raidersdroploot
 {
     public class ConfigTableRow
     {

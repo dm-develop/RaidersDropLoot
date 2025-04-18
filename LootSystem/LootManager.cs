@@ -1,5 +1,5 @@
-﻿using Il2Cpp;
-using MelonLoader;
+﻿using MelonLoader;
+using System.Collections.Generic;
 using Random = UnityEngine.Random;
 
 namespace dm.ffmods.raidersdroploot

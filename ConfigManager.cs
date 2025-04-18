@@ -1,10 +1,11 @@
-﻿using Il2Cpp;
-using MelonLoader;
+﻿using MelonLoader;
 
 namespace dm.ffmods.raidersdroploot
 {
     public class ConfigManager
     {
+        #region Fields
+
         #region Fields
 
         private bool isInitialised = false;
@@ -14,11 +15,19 @@ namespace dm.ffmods.raidersdroploot
 
         #endregion Fields
 
+        #endregion Fields
+
+        #region Properties
+
         #region Properties
 
         public bool IsInitialised { get => isInitialised; }
 
         #endregion Properties
+
+        #endregion Properties
+
+        #region Public Methods
 
         #region Public Methods
 
@@ -36,6 +45,10 @@ namespace dm.ffmods.raidersdroploot
         }
 
         #endregion Public Methods
+
+        #endregion Public Methods
+
+        #region Private Methods
 
         #region Private Methods
 
@@ -80,6 +93,8 @@ namespace dm.ffmods.raidersdroploot
                 UpdateTable(table);
             }
         }
+
+        #endregion Private Methods
 
         #endregion Private Methods
     }

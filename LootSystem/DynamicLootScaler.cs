@@ -1,8 +1,8 @@
-﻿using Il2Cpp;
-using MelonLoader;
+﻿using MelonLoader;
 using System.Diagnostics;
 using System.Reflection;
-using static Il2Cpp.ResourceManager;
+using System.Collections.Generic;
+using static ResourceManager;
 
 namespace dm.ffmods.raidersdroploot
 {
