@@ -6,7 +6,8 @@ You can also find this mod on [nexusmods](https://www.nexusmods.com/farthestfron
 # Would you like to learn more?
 For more info, visit the [wiki](https://github.com/dm-develop/RaidersDropLoot/wiki)!
 
-Shield: [![CC BY-NC 4.0][cc-by-nc-shield]][cc-by-nc]
+
+[![CC BY-NC 4.0][cc-by-nc-shield]][cc-by-nc]
 
 This work is licensed under a
 [Creative Commons Attribution-NonCommercial 4.0 International License][cc-by-nc].
